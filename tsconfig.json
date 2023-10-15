@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "target": "ES6",
+    "module": "CommonJS",
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "strict": true
+  },
+  "include": [
+    "src/**/*.ts", 
+    "src/controllers/auth.controller.ts", 
+    "src/services/auth.service.ts" 
+  ]
+}
