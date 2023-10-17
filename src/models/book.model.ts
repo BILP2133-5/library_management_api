@@ -1,16 +1,31 @@
 import { Schema, model, Document, Types } from 'mongoose';
 
 export interface IBook extends Document {
-    title: string;
+    bookName: string;
+    publicationYear: number;
+    publisher: string;
+    language: string;
     author: string;
-    description: string;
-    isAvailable: boolean;
+    aboutBook: string;
+    isAvailable: boolean | null;
     loaner: Types.ObjectId | null;
     borrowedAt: Date | null;
 }
 
 const bookSchema = new Schema<IBook>({
-    title: {
+    bookName: {
+        type: String,
+        required: true
+    },
+    publicationYear: {
+        type: Number,
+        required: true
+    },
+    publisher: {
+        type: String,
+        required: true
+    },
+    language: {
         type: String,
         required: true
     },
@@ -18,7 +33,7 @@ const bookSchema = new Schema<IBook>({
         type: String,
         required: true
     },
-    description: {
+    aboutBook: {
         type: String,
         required: true
     },
