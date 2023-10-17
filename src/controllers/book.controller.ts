@@ -39,3 +39,44 @@ export async function loanBook(req: Request, res: Response): Promise<void> {
     }
 }
 
+export async function findById(req: Request, res: Response): Promise<void> {
+    const id = req.params.id;
+
+    try {
+        const book = await bookService.findById(id);
+        if (book) {
+            res.json(book);
+        } else {
+            res.status(404).json({ error: 'Book not found' });
+        }
+    } catch (error) {
+        res.status(500).json({ error: 'Internal server error' });
+    }
+}
+
+export async function removeById(req: Request, res: Response): Promise<void> {
+    const id = req.params.id;
+
+    try {
+        await bookService.removeById(id);
+        res.json({ message: 'Book removed successfully' });
+    } catch (error) {
+        res.status(500).json({ error: 'Internal server error' });
+    }
+}
+
+export async function updateBook(req: Request, res: Response): Promise<void> {
+    const id = req.params.id;
+    const updatedBookData: Partial<IBook> = req.body;
+
+    try {
+        const updatedBook = await bookService.updateBook(id, updatedBookData);
+        if (updatedBook) {
+            res.json(updatedBook);
+        } else {
+            res.status(404).json({ error: 'Book not found' });
+        }
+    } catch (error) {
+        res.status(500).json({ error: 'Internal server error' });
+    }
+}
