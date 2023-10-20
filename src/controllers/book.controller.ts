@@ -33,7 +33,7 @@ export async function loanBook(req: Request, res: Response): Promise<void> {
 
     try {
         await bookService.loanBook(bookId, userId);
-        res.json({ message: 'Book loaned successfully' });
+        res.json({ message: 'Book loaned/unloaned successfully' });
     } catch (error:unknown) {
         res.status(400).json({ error: "Unkown Error" });
     }

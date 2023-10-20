@@ -18,12 +18,19 @@ export async function loanBook(bookId: Types.ObjectId, userId: Types.ObjectId): 
     }
 
     if (!book.isAvailable) {
-        throw new Error('Book is not available for loan');
+        if (book.loaner && book.loaner.equals(userId)) {
+            book.isAvailable = true;
+            book.loaner = null;
+            book.borrowedAt = null;
+        } else {
+            throw new Error('Book is not available for loan');
+        }
+    } else {
+        book.isAvailable = false;
+        book.loaner = userId;
+        book.borrowedAt = new Date();
     }
 
-    book.isAvailable = false;
-    book.loaner = userId;
-    book.borrowedAt = new Date();
     await book.save();
 }
 
