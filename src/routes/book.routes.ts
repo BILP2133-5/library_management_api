@@ -9,5 +9,6 @@ bookRouter.delete('/remove/:id', bookController.removeById);
 bookRouter.put('/update/:id', bookController.updateBook);
 bookRouter.post('/add', bookController.addBook);
 bookRouter.post('/loan/:bookId', bookController.loanBook);
+bookRouter.get('/search/:query', bookController.searchBooks);
 
 export default bookRouter;

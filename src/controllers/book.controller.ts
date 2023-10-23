@@ -80,3 +80,14 @@ export async function updateBook(req: Request, res: Response): Promise<void> {
         res.status(500).json({ error: 'Internal server error' });
     }
 }
+
+export async function searchBooks(req: Request, res: Response): Promise<void> {
+    const query = req.params.query; 
+    try {
+      const results = await bookService.searchBooks(query as string);
+      console.log(results);
+      res.json(results);
+    } catch (error) {
+      res.status(500).json({ error: 'Error while searching books' });
+    }
+}

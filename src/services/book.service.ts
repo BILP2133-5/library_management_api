@@ -57,3 +57,26 @@ export async function updateBook(id: string, updatedBookData: Partial<IBook>): P
         throw new Error('Error updating the book');
     }
 }
+
+export async function searchBooks(query: string): Promise<IBook[] | null> {
+    if (!query) {
+        throw new Error('Search query is missing.');
+    }
+
+    try {
+        const results = await Book.find({
+            $or: [
+                { bookName: { $regex: new RegExp(query, 'i') } },
+                { author: { $regex: new RegExp(query, 'i') } }
+            ]
+        });
+        
+        if (results === null || results.length === 0) {
+            return null;
+        }
+        
+        return results;
+    } catch (error) {
+        throw new Error('Error searching the books: ');
+    }
+}
