@@ -7,9 +7,10 @@ export interface IBook extends Document {
     language: string;
     author: string;
     aboutBook: string;
-    isAvailable: boolean | null;
-    loaner: Types.ObjectId | null;
-    borrowedAt: Date | null;
+    isAvailable?: boolean;
+    loaner?: Types.ObjectId;
+    borrowedAt?: Date;
+    url: string
 }
 
 const bookSchema = new Schema<IBook>({
@@ -49,6 +50,10 @@ const bookSchema = new Schema<IBook>({
     borrowedAt: {
         type: Date,
         default: null
+    },
+    url: {
+        type: String,
+        required: true
     }
 });
 

@@ -5,11 +5,11 @@ export interface IUser extends Document {
   name: string;
   email: string;
   password: string;
-  role: string;
+  role: "user" | "admin";
   comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
-const UserSchema: Schema = new Schema({
+const UserSchema: Schema = new Schema<IUser>({
   name: {
     type: String,
     required: true,
@@ -33,7 +33,7 @@ const UserSchema: Schema = new Schema({
 UserSchema.methods.comparePassword = async function (
   candidatePassword: string
 ): Promise<boolean> {
-  const user = this as IUser;
+  const user = this;
   return bcrypt.compare(candidatePassword, user.password);
 };
 
