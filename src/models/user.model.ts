@@ -1,11 +1,13 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Schema, Document,Types, Model } from "mongoose";
 import bcrypt from "bcrypt";
+import Book, { IBook } from "./book.model";
 
 export interface IUser extends Document {
   name: string;
   email: string;
   password: string;
   role: "user" | "admin";
+  borrowedBooks: Types.Array<IBook["_id"]>;
   comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
@@ -28,6 +30,9 @@ const UserSchema: Schema = new Schema<IUser>({
     enum: ["user", "admin"],
     default: "user",
   },
+  borrowedBooks: [
+    { type: Schema.Types.ObjectId, ref: "Book" }, 
+  ],
 });
 
 UserSchema.methods.comparePassword = async function (

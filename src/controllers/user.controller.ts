@@ -25,6 +25,22 @@ export async function getUserByID(req: Request, res: Response): Promise<void> {
     }
 }
 
+export async function getUserBorrowedBooks(req: Request, res: Response): Promise<void> {
+    const userId = req.params.userId;
+    try{
+        const borrowedBooks = await userService.getUserBorrowedBooks(userId);
+
+        if(!borrowedBooks) {
+            res.status(404).json({error:"User not found"});
+        }
+
+        res.json(borrowedBooks);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({error:"Internal Server Error"});
+    }
+}
+
 export async function giveUserAdmin(req: Request, res: Response) {
     const { adminUserId, userIdToPromote } = req.body;
   

@@ -6,6 +6,7 @@ import * as bodyParser from 'body-parser';
 import authRouter from './routes/auth.routes';
 import bookRouter from './routes/book.routes';
 import userRouter from  './routes/user.routes';
+import logRouter from './routes/log.routes';
 
 const app = express();
 const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000
@@ -27,6 +28,7 @@ mongoose.connect(mongoURI, {
 app.use('/auth', authRouter); // Auth Route
 app.use('/books', bookRouter); // Book Route
 app.use('/users', userRouter); // User Route
+app.use('/logs',logRouter); // Logs Route
   
 app.get('/', (req: Request, res: Response) => {
   res.send('Library API');
