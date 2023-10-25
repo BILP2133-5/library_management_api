@@ -30,7 +30,6 @@ export async function addBook(req: Request, res: Response): Promise<void> {
 export async function loanBook(req: Request, res: Response): Promise<void> {
     const bookId: Types.ObjectId = new Types.ObjectId(req.params.bookId as string);
     const userId: Types.ObjectId = new Types.ObjectId(req.body.userId as string);
-
     try {
         await bookService.loanBook(bookId, userId);
         res.json({ message: 'Book loaned/unloaned successfully' });

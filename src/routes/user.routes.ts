@@ -6,5 +6,6 @@ const userRouter = express.Router();
 userRouter.get('/', userController.getAllUsers);
 userRouter.get('/:userId', userController.getUserByID);
 userRouter.put('/giveadmin',userController.giveUserAdmin);
+userRouter.get('/borrowedBook/:userId',userController.getUserBorrowedBooks);
 
 export default userRouter;

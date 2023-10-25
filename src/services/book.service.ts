@@ -1,5 +1,7 @@
 import Book, { IBook } from '../models/book.model';
+import User, { IUser } from '../models/user.model';
 import { Types } from 'mongoose';
+import { logActivity } from './log.service';
 
 export async function listBooks(): Promise<IBook[]> {
     return Book.find().exec();
@@ -11,27 +13,50 @@ export async function addBook(bookData: Partial<IBook>): Promise<IBook> {
 }
 
 export async function loanBook(bookId: Types.ObjectId, userId: Types.ObjectId): Promise<void> {
-    const book = await Book.findById(bookId);
+    try {
+        const book = await Book.findById(bookId);
+        const user = await User.findById(userId);
 
-    if (!book) {
-        throw new Error('Book not found');
-    }
-
-    if (!book.isAvailable) {
-        if (book.loaner && book.loaner.equals(userId)) {
-            book.isAvailable = true;
-            book.loaner = null;
-            book.borrowedAt = null;
-        } else {
-            throw new Error('Book is not available for loan');
+        if (!book || !user) {
+            throw new Error('Book or user not found');
         }
-    } else {
-        book.isAvailable = false;
-        book.loaner = userId;
-        book.borrowedAt = new Date();
-    }
 
-    await book.save();
+        if (!book.isAvailable) {
+            if (book.loaner && book.loaner.equals(userId)) {
+                book.isAvailable = true;
+                book.loaner = null;
+                book.borrowedAt = null;
+                book.returnDate = null;
+
+                user.borrowedBooks.pull(bookId);
+
+                await book.save();
+                await user.save();
+
+                await logActivity(userId, 'Kitap Geri Verme', 'Kullanici kitabi geri verdi Kitap ID :' + bookId);
+            } else {
+                throw new Error('Book is not available for loan');
+            }
+        } else {
+            book.isAvailable = false;
+            book.loaner = userId;
+            book.borrowedAt = new Date();
+
+            const returnDate = new Date(book.borrowedAt);
+            returnDate.setDate(returnDate.getDate() + 15);
+            book.returnDate = returnDate;
+
+            user.borrowedBooks.push(bookId);
+            
+            await book.save();
+            await user.save();
+
+            await logActivity(userId, 'Kitap Odunc Alma', 'Kullanici kitap odunc aldi Kitap ID :' + bookId);
+        }
+    } catch (error) {
+        console.error('Error in loanBook:', error);
+        throw new Error('Error in loanBook');
+    }
 }
 
 export async function findById(id: string): Promise<IBook | null> {
