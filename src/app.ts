@@ -1,6 +1,5 @@
 import express, { Request, Response } from 'express';
 import mongoose from 'mongoose';
-require('dotenv').config();
 import * as bodyParser from 'body-parser';
 
 import authRouter from './routes/auth.routes';
