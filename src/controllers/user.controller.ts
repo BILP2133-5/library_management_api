@@ -1,6 +1,10 @@
 import { Request, Response } from 'express';
 import * as userService from '../services/user.service';
 
+function isValidRole(role: string): boolean {
+  return role === 'admin' || role === 'user';
+}
+
 export async function getAllUsers(req: Request, res: Response): Promise<void> {
   try {
     const users = await userService.getAllUsers();
@@ -41,11 +45,16 @@ export async function getUserBorrowedBooks(req: Request, res: Response): Promise
   }
 }
 
-export async function giveUserAdmin(req: Request, res: Response): Promise<void> {
-  const { adminUserId, userIdToPromote } = req.body;
+export async function updateUserRole(req: Request, res: Response): Promise<void> {
+  const { adminUserId, userIdToPromote, role } = req.body;
+
+  if (!isValidRole(role)) {
+     res.status(400).json({ error: 'Invalid role. Role must be "admin" or "user".' });
+     return;
+  }
 
   try {
-    const result = await userService.giveUserAdmin(adminUserId, userIdToPromote);
+    const result = await userService.updateUserRole(adminUserId, userIdToPromote, role);
     
     res.json(result);
   } catch (error) {
