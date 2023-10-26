@@ -1,6 +1,6 @@
-import mongoose, { Schema, Document,Types, Model } from "mongoose";
+import { Schema, Document, Types, model } from "mongoose";
 import bcrypt from "bcrypt";
-import Book, { IBook } from "./book.model";
+import { IBook } from "./book.model";
 
 export interface IUser extends Document {
   name: string;
@@ -11,7 +11,7 @@ export interface IUser extends Document {
   comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
-const UserSchema: Schema = new Schema<IUser>({
+const UserSchema = new Schema<IUser>({
   name: {
     type: String,
     required: true,
@@ -42,4 +42,4 @@ UserSchema.methods.comparePassword = async function (
   return bcrypt.compare(candidatePassword, user.password);
 };
 
-export default mongoose.model<IUser>("User", UserSchema);
+export default model<IUser>("User", UserSchema);
