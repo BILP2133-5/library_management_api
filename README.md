@@ -8,11 +8,12 @@ PORT=Port_here
 ```
 
 ```bash
-tsc
+npm install
 ```
 
 ```bash
-node dist/app.js 
+npm start
 ```
+
 
 
