@@ -67,3 +67,14 @@ export async function updateUserRole(req: Request, res: Response): Promise<void>
     }
   }
 }
+
+export async function removeUserByID(req: Request, res: Response): Promise<void> {
+  const id = req.params.id;
+
+  try {
+    await userService.removeUserByID(id);
+    res.json({ message: 'User removed successfully' });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+}

@@ -40,3 +40,11 @@ export async function updateUserRole(adminUserId: string, userIdToPromote: strin
 
   return updatedUser;
 }
+
+export async function removeUserByID(id: string): Promise<void> {
+  try {
+      await User.findByIdAndRemove(id);
+  } catch (error) {
+      throw new Error('Error while removing user');
+  }
+}
