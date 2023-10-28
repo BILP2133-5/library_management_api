@@ -4,6 +4,7 @@
 Create a .ENV
 ```
 MONGODB_URI=Mongo_DB_URL_Here
+JWT_SECRET=JWT_SECRET_HERE
 PORT=Port_here
 ```
 
