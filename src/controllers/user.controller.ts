@@ -46,7 +46,7 @@ export async function getUserBorrowedBooks(req: Request, res: Response): Promise
 }
 
 export async function updateUserRole(req: Request, res: Response): Promise<void> {
-  const { adminUserId, userIdToPromote, role } = req.body;
+  const { userIdToPromote, role } = req.body;
 
   if (!isValidRole(role)) {
      res.status(400).json({ error: 'Invalid role. Role must be "admin" or "user".' });
@@ -54,7 +54,7 @@ export async function updateUserRole(req: Request, res: Response): Promise<void>
   }
 
   try {
-    const result = await userService.updateUserRole(adminUserId, userIdToPromote, role);
+    const result = await userService.updateUserRole(userIdToPromote, role);
     
     res.json(result);
   } catch (error) {

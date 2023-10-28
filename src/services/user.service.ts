@@ -23,15 +23,7 @@ export interface UserOrError {
   user?: IUser;
 }
 
-export async function updateUserRole(adminUserId: string, userIdToPromote: string, role: string): Promise<IUser> {
-  const adminUser = await User.findById(adminUserId);
-  if (!adminUser) {
-    throw new Error('Admin user not found');
-  }
-
-  if (adminUser.role !== 'admin') {
-    throw new Error('Only admin users can promote other users');
-  }
+export async function updateUserRole(userIdToPromote: string, role: string): Promise<IUser> {
 
   const updatedUser = await User.findByIdAndUpdate(userIdToPromote, { role }, { new: true });
   if (!updatedUser) {
