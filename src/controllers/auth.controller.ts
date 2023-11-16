@@ -6,7 +6,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
   try {
     const newUser: IUser = req.body;
     const token = await authService.register(newUser);
-    res.json({ token });
+    res.status(200).json({ token });
   } catch (error: any) {
     if (error instanceof Error) {
       res.status(400).json({ error: error.message });
@@ -20,7 +20,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
   try {
     const { email, password } = req.body;
     const token = await authService.login(email, password);
-    res.json({ token });
+    res.status(200).json({ token });
   } catch (error: any) {
     if (error instanceof Error) {
       if (error.message === 'User not found' || error.message === 'Invalid password') {
@@ -43,7 +43,7 @@ export const protectedRoute = async (req: Request, res: Response) => {
       return;
     }
 
-    res.json({ user });
+    res.status(200).json({ user });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Internal Server Error' });
