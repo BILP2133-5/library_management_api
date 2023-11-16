@@ -6,7 +6,7 @@ import { IBook } from '../models/book.model';
 export async function listBooks(req: Request, res: Response): Promise<void> {
     try {
         const books = await bookService.listBooks();
-        res.json(books);
+        res.status(200).json(books);
     } catch (error) {
         res.status(500).json({ error: 'Internal server error' });
     }
@@ -32,7 +32,7 @@ export async function loanBook(req: Request, res: Response): Promise<void> {
     const userId: Types.ObjectId = new Types.ObjectId(req.body.userId as string);
     try {
         await bookService.loanBook(bookId, userId);
-        res.json({ message: 'Book loaned/unloaned successfully' });
+        res.status(201).json({ message: 'Book loaned/unloaned successfully' });
     } catch (error:unknown) {
         res.status(400).json({ error: "Unkown Error" });
     }
@@ -44,7 +44,7 @@ export async function findById(req: Request, res: Response): Promise<void> {
     try {
         const book = await bookService.findById(id);
         if (book) {
-            res.json(book);
+            res.send(200).json(book);
         } else {
             res.status(404).json({ error: 'Book not found' });
         }
