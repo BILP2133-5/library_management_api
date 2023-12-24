@@ -6,7 +6,7 @@ export interface IUser extends Document {
   name: string;
   email: string;
   password: string;
-  role: "user" | "admin";
+  role: "user" | "admin" | "superadmin";
   borrowedBooks: Types.Array<IBook["_id"]>;
   comparePassword(candidatePassword: string): Promise<boolean>;
 }
@@ -27,7 +27,7 @@ const UserSchema = new Schema<IUser>({
   },
   role: {
     type: String,
-    enum: ["user", "admin"],
+    enum: ["user", "admin","superadmin"],
     default: "user",
   },
   borrowedBooks: [
