@@ -35,3 +35,13 @@ export const isAdmin = (req: Request, res: Response, next: NextFunction) => {
     res.status(403).json({ error: 'Access denied. Only admin users can perform this action.' });
   }
 };
+
+export const isSuperadmin = (req: Request, res: Response, next: NextFunction) => {
+  const user = (req as any).user;
+
+  if (user && user.role === 'superadmin') {
+    next();
+  } else {
+    res.status(403).json({ error: 'Access denied. Only superadmin users can perform this action.' });
+  }
+};
