@@ -49,7 +49,7 @@ export async function updateUserRole(req: Request, res: Response): Promise<void>
   const { userIdToPromote, role } = req.body;
 
   if (!isValidRole(role)) {
-     res.status(400).json({ error: 'Invalid role. Role must be "admin" or "user".' });
+     res.status(400).json({ error: 'Invalid role. Role must be "admin","superadmin" or "user".' });
      return;
   }
 

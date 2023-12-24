@@ -8,5 +8,6 @@ authRouter.get('/protected', requireAuth, authController.protectedRoute);
 
 authRouter.post('/register', authController.register);
 authRouter.post('/login', authController.login);
+authRouter.get('/protected',requireAuth,authController.protectedRoute);
 
 export default authRouter;

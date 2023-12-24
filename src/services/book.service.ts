@@ -21,43 +21,60 @@ export async function loanBook(bookId: Types.ObjectId, userId: Types.ObjectId): 
             throw new Error('Book or user not found');
         }
 
-        if (!book.isAvailable) {
-            if (book.loaner && book.loaner.equals(userId)) {
-                book.isAvailable = true;
-                book.loaner = null;
-                book.borrowedAt = null;
-                book.returnDate = null;
-
-                user.borrowedBooks.pull(bookId);
-
+        if (book.isAvailable) {
+                book.isAvailable = false;
+                book.loaner = userId;
+                book.borrowedAt = new Date();
+    
+                const returnDate = new Date(book.borrowedAt);
+                returnDate.setDate(returnDate.getDate() + 15);
+                book.returnDate = returnDate;
+    
+                user.borrowedBooks.push(bookId);
+                
                 await book.save();
                 await user.save();
-
-                await logActivity(userId, 'Kitap Geri Verme', 'Kullanici kitabi geri verdi Kitap ID :' + bookId);
+    
+                await logActivity(userId, 'Kitap Odunc Alma', 'Kullanici kitap odunc aldi Kitap ID :' + bookId);
             } else {
                 throw new Error('Book is not available for loan');
-            }
-        } else {
-            book.isAvailable = false;
-            book.loaner = userId;
-            book.borrowedAt = new Date();
-
-            const returnDate = new Date(book.borrowedAt);
-            returnDate.setDate(returnDate.getDate() + 15);
-            book.returnDate = returnDate;
-
-            user.borrowedBooks.push(bookId);
-            
-            await book.save();
-            await user.save();
-
-            await logActivity(userId, 'Kitap Odunc Alma', 'Kullanici kitap odunc aldi Kitap ID :' + bookId);
-        }
+            } 
     } catch (error) {
         console.error('Error in loanBook:', error);
         throw new Error('Error in loanBook');
     }
 }
+
+export async function unloanBook(bookId: Types.ObjectId, userId: Types.ObjectId): Promise<void> {
+    try {
+        const book = await Book.findById(bookId);
+        const user = await User.findById(userId);
+
+        if (!book || !user) {
+            throw new Error('Book or user not found');
+        }
+
+        if (!book.isAvailable && book.loaner && book.loaner.equals(userId)) {
+            book.isAvailable = true;
+            book.loaner = null;
+            book.borrowedAt = null;
+            book.returnDate = null;
+
+            user.borrowedBooks.pull(bookId);
+
+            await book.save();
+            await user.save();
+
+            await logActivity(userId, 'Kitap Geri Verme', 'Kullanici kitabi geri verdi Kitap ID :' + bookId);
+        } else {
+            throw new Error('You are not the loaner of this book or the book is not currently on loan.');
+        }
+    } catch (error) {
+        console.error('Error in returnBook:', error);
+        throw new Error('Error in returnBook');
+    }
+}
+
 
 export async function findById(id: string): Promise<IBook | null> {
     try {
