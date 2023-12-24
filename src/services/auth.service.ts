@@ -5,7 +5,13 @@ import * as jwt from 'jsonwebtoken';
 
 const secretkey = process.env.JWT_SECRET as string;
 
-export async function register(newUser: IUser): Promise<string> {
+interface NewUser {
+  name: string;
+  email: string;
+  password: string;
+  role?: "user" | "admin" | "superadmin";
+}
+export async function register(newUser: NewUser): Promise<string> {
   try {
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(newUser.password, saltRounds);
