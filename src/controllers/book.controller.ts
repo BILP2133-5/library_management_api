@@ -32,7 +32,18 @@ export async function loanBook(req: Request, res: Response): Promise<void> {
     const userId: Types.ObjectId = new Types.ObjectId(req.body.userId as string);
     try {
         await bookService.loanBook(bookId, userId);
-        res.status(201).json({ message: 'Book loaned/unloaned successfully' });
+        res.status(201).json({ message: 'Book loaned successfully' });
+    } catch (error:unknown) {
+        res.status(400).json({ error });
+    }
+}
+
+export async function unloanBook(req: Request, res: Response): Promise<void> {
+    const bookId: Types.ObjectId = new Types.ObjectId(req.params.bookId as string);
+    const userId: Types.ObjectId = new Types.ObjectId(req.body.userId as string);
+    try {
+        await bookService.unloanBook(bookId, userId);
+        res.status(201).json({ message: 'Book unloaned successfully' });
     } catch (error:unknown) {
         res.status(400).json({ error: "Unkown Error" });
     }

@@ -32,6 +32,23 @@ export const login = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
+export const createAdmin = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const newUser: IUser = req.body;
+    
+    newUser.role = 'admin';
+
+    const token = await authService.register(newUser);
+    res.status(200).json({ token });
+  } catch (error: any) {
+    if (error instanceof Error) {
+      res.status(400).json({ error: error.message });
+    } else {
+      res.status(500).json({ error: 'Unknown Error' });
+    }
+  }
+};
+
 export const protectedRoute = async (req: Request, res: Response) => {
   const userId = (req as any).user.userId; 
 
