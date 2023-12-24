@@ -4,9 +4,10 @@ import { requireAuth } from '../middleware/authMiddleware';
 
 const authRouter = express.Router();
 
+authRouter.get('/protected', requireAuth, authController.protectedRoute);
+
 authRouter.post('/register', authController.register);
 authRouter.post('/login', authController.login);
-authRouter.post('/createAdmin', authController.createAdmin);
 authRouter.get('/protected',requireAuth,authController.protectedRoute);
 
 export default authRouter;
