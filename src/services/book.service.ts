@@ -43,7 +43,7 @@ export async function loanBook(bookId: Types.ObjectId, userId: Types.ObjectId): 
     
             await logActivity(userId, 'Kitap Odunc Alma', 'Kullanici kitap odunc aldi Kitap ID :' + bookId);
         } catch (error) {
-            throw new Error("Couldn't change book data.", { cause: "failedBookUpdate" })
+            throw new Error("Couldn't change the book to loaned state.", { cause: "failedBookUpdate" })
         }
 
     } else {
@@ -52,32 +52,35 @@ export async function loanBook(bookId: Types.ObjectId, userId: Types.ObjectId): 
 }
 
 export async function unloanBook(bookId: Types.ObjectId, userId: Types.ObjectId): Promise<void> {
+    const book: Awaited<ReturnType<typeof BookDataAccess.getBookById>> = await BookDataAccess.getBookById(bookId);
+    if (book === null) {
+        throw new Error('Book not found.', { cause: 'Empty query result.' });
+    }
+
+    const user: Awaited<ReturnType<typeof UserDataAccess.getUserById>> = await UserDataAccess.getUserById(userId);
+    if (user === null) {
+        throw new Error('User not found.', { cause: 'Empty query result.' });
+    }
+
+    if (book.isAvailable) {
+        throw new Error('The book is not currently on loan.', { cause: 'incompatibleBookState' });
+    } else if (book?.loaner?.equals(userId)) {
+        throw new Error('You are not the loaner of this book.', { cause: 'incorrectGivenUser' });
+    }
     try {
-        const book = await Book.findById(bookId);
-        const user = await User.findById(userId);
+        book.isAvailable = true;
+        book.loaner = null;
+        book.borrowedAt = null;
+        book.returnDate = null;
 
-        if (!book || !user) {
-            throw new Error('Book or user not found');
-        }
+        user.borrowedBooks.pull(bookId);
 
-        if (!book.isAvailable && book.loaner && book.loaner.equals(userId)) {
-            book.isAvailable = true;
-            book.loaner = null;
-            book.borrowedAt = null;
-            book.returnDate = null;
+        await book.save();
+        await user.save();
 
-            user.borrowedBooks.pull(bookId);
-
-            await book.save();
-            await user.save();
-
-            await logActivity(userId, 'Kitap Geri Verme', 'Kullanici kitabi geri verdi Kitap ID :' + bookId);
-        } else {
-            throw new Error('You are not the loaner of this book or the book is not currently on loan.');
-        }
+        await logActivity(userId, 'Kitap Geri Verme', 'Kullanici kitabi geri verdi Kitap ID :' + bookId);
     } catch (error) {
-        console.error('Error in returnBook:', error);
-        throw new Error('Error in returnBook');
+        throw new Error("Couldn't change the book to unloaned state.", { cause: 'failedBookUpdate' });
     }
 }
 
