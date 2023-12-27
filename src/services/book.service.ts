@@ -85,12 +85,13 @@ export async function unloanBook(bookId: Types.ObjectId, userId: Types.ObjectId)
 }
 
 
-export async function findById(id: string): Promise<IBook | null> {
-    try {
-        return await Book.findById(id);
-    } catch (error) {
-        throw new Error('Error finding the book by ID');
+export async function getBookById(bookId: Types.ObjectId): Promise<IBook | null> {
+    const bookDocument = await BookDataAccess.getBookById(bookId);
+    if (bookDocument === null) {
+        throw new Error("Book with the given id doesn't exist.", { cause: "emptyQueryResult" });
     }
+
+    return bookDocument
 }
 
 export async function removeById(id: string): Promise<void> {

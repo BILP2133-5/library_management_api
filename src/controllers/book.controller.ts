@@ -78,18 +78,19 @@ export async function unloanBook(req: Request, res: Response): Promise<void> {
     }
 }
 
-export async function findById(req: Request, res: Response): Promise<void> {
-    const id = req.params.id;
+export async function getBookById(req: Request, res: Response): Promise<void> {
+    const bookId = new Types.ObjectId(req.params.id);
 
     try {
-        const book = await BookService.findById(id);
-        if (book) {
-            res.send(200).json(book);
-        } else {
-            res.status(404).json({ error: 'Book not found' });
-        }
+        const book = await BookService.getBookById(bookId);
+
+        res.send(200).json(book);
     } catch (error) {
         if (error instanceof Error) {
+            if (error.cause === "emptyQueryResult") {
+                res.status(404).json({ error: "Book with the given id doesn't exist." });
+            }
+
             res.status(500).json({ error: error.message });
         }
     
