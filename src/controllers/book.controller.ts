@@ -1,28 +1,33 @@
 import { Request, Response } from 'express';
-import * as bookService from '../services/book.service';
+import * as BookService from '../services/book.service';
 import { Types } from 'mongoose';
 import { IBook } from '../models/book.model'; 
 
 export async function listBooks(req: Request, res: Response): Promise<void> {
     try {
-        const books = await bookService.listBooks();
+        const books = await BookService.listBooks();
+
         res.status(200).json(books);
     } catch (error) {
-        res.status(500).json({ error: 'Internal server error' });
+        if (error instanceof Error) {
+            res.status(500).json({ error: error.message });
+        } else {
+            res.status(500).json({ error: 'Internal server error.' });
+        }
     }
 }
 
 export async function addBook(req: Request, res: Response): Promise<void> {
-    const bookData: Partial<IBook> = req.body;
-
     try {
-        const newBook = await bookService.addBook(bookData);
+        const bookData: Partial<IBook> = req.body;
+        const newBook = await BookService.addBook(bookData);
+        
         res.status(201).json(newBook);
-    } catch (error: unknown) { 
+    } catch (error) { 
         if (error instanceof Error) {
-            res.status(400).json({ error: error.message });
+            res.status(500).json({ error: error.message });
         } else {
-            res.status(500).json({ error: 'Unkown error' });
+            res.status(500).json({ error: 'Internal server error.' });
         }
     }
 }
@@ -30,22 +35,40 @@ export async function addBook(req: Request, res: Response): Promise<void> {
 export async function loanBook(req: Request, res: Response): Promise<void> {
     const bookId: Types.ObjectId = new Types.ObjectId(req.params.bookId as string);
     const userId: Types.ObjectId = new Types.ObjectId(req.body.userId as string);
+
     try {
-        await bookService.loanBook(bookId, userId);
-        res.status(201).json({ message: 'Book loaned successfully' });
-    } catch (error:unknown) {
-        res.status(400).json({ error });
+        await BookService.loanBook(bookId, userId);
+
+        res.status(201).json({ message: 'Book loaned/unloaned successfully' });
+    } catch (error) {
+        if (error instanceof Error) {
+            if (error.cause === "failedBookUpdate") {
+                res.status(500).json({ error: "A failure occurred while updating the book." }); 
+            } else if (error.cause === "unavailabilityOfBook") {
+                res.status(409).json({ error: "The book is currently unavailable to be loaned." }); 
+            } else {
+                res.status(500).json({ error: error.message });
+            }
+        } else {
+            res.status(500).json({ error: 'Internal server error.' });
+        }
     }
 }
 
 export async function unloanBook(req: Request, res: Response): Promise<void> {
     const bookId: Types.ObjectId = new Types.ObjectId(req.params.bookId as string);
     const userId: Types.ObjectId = new Types.ObjectId(req.body.userId as string);
+
     try {
-        await bookService.unloanBook(bookId, userId);
+        await BookService.unloanBook(bookId, userId);
+
         res.status(201).json({ message: 'Book unloaned successfully' });
-    } catch (error:unknown) {
-        res.status(400).json({ error: "Unkown Error" });
+    } catch (error) {
+        if (error instanceof Error) {
+            res.status(500).json({ error: error.message });
+        } else {
+            res.status(500).json({ error: 'Internal server error.' });
+        }
     }
 }
 
@@ -53,14 +76,18 @@ export async function findById(req: Request, res: Response): Promise<void> {
     const id = req.params.id;
 
     try {
-        const book = await bookService.findById(id);
+        const book = await BookService.findById(id);
         if (book) {
             res.send(200).json(book);
         } else {
             res.status(404).json({ error: 'Book not found' });
         }
     } catch (error) {
-        res.status(500).json({ error: 'Internal server error' });
+        if (error instanceof Error) {
+            res.status(500).json({ error: error.message });
+        } else {
+            res.status(500).json({ error: 'Internal server error.' });
+        }
     }
 }
 
@@ -68,10 +95,14 @@ export async function removeById(req: Request, res: Response): Promise<void> {
     const id = req.params.id;
 
     try {
-        await bookService.removeById(id);
+        await BookService.removeById(id);
         res.json({ message: 'Book removed successfully' });
     } catch (error) {
-        res.status(500).json({ error: 'Internal server error' });
+        if (error instanceof Error) {
+            res.status(500).json({ error: error.message });
+        } else {
+            res.status(500).json({ error: 'Internal server error.' });
+        }
     }
 }
 
@@ -80,24 +111,32 @@ export async function updateBook(req: Request, res: Response): Promise<void> {
     const updatedBookData: Partial<IBook> = req.body;
 
     try {
-        const updatedBook = await bookService.updateBook(id, updatedBookData);
+        const updatedBook = await BookService.updateBook(id, updatedBookData);
         if (updatedBook) {
             res.json(updatedBook);
         } else {
             res.status(404).json({ error: 'Book not found' });
         }
     } catch (error) {
-        res.status(500).json({ error: 'Internal server error' });
+        if (error instanceof Error) {
+            res.status(500).json({ error: error.message });
+        } else {
+            res.status(500).json({ error: 'Internal server error.' });
+        }
     }
 }
 
 export async function searchBooks(req: Request, res: Response): Promise<void> {
-    const query = req.params.query; 
     try {
-      const results = await bookService.searchBooks(query as string);
-      console.log(results);
-      res.json(results);
+        const query = req.params.query; 
+        const results = await BookService.searchBooks(query);
+      
+        res.json(results);
     } catch (error) {
-      res.status(500).json({ error: 'Error while searching books' });
+        if (error instanceof Error) {
+            res.status(500).json({ error: error.message });
+        } else {
+            res.status(500).json({ error: 'Internal server error.' });
+        }
     }
 }

@@ -1,48 +1,54 @@
-import Book, { IBook } from '../models/book.model';
-import User, { IUser } from '../models/user.model';
 import { Types } from 'mongoose';
+
+import Book, { IBook } from '../models/book.model';
+import User from '../models/user.model';
 import { logActivity } from './log.service';
 
+import * as BookDataAccess from '../data-access/book.data-access';
+import * as UserDataAccess from '../data-access/user.data-access';
+
 export async function listBooks(): Promise<IBook[]> {
-    return Book.find().exec();
+    return await BookDataAccess.getAllBooks();
 }
 
 export async function addBook(bookData: Partial<IBook>): Promise<IBook> {
-    const newBook = new Book(bookData);
-    return newBook.save();
+    return await BookDataAccess.addNewBook(bookData);
 }
 
 export async function loanBook(bookId: Types.ObjectId, userId: Types.ObjectId): Promise<void> {
-    try {
-        const book = await Book.findById(bookId);
-        const user = await User.findById(userId);
+    const book: Awaited<ReturnType<typeof BookDataAccess.getBookById>> = await BookDataAccess.getBookById(bookId);
+    if (book === null) {
+        throw new Error('Book not found.', { cause: 'Empty query result.' });
+    }
 
-        if (!book || !user) {
-            throw new Error('Book or user not found');
+    const user: Awaited<ReturnType<typeof UserDataAccess.getUserById>> = await UserDataAccess.getUserById(userId);
+    if (user === null) {
+        throw new Error('User not found.', { cause: 'Empty query result.' });
+    }
+
+    if (book.isAvailable) {
+        try {
+            book.isAvailable = false;
+            book.loaner = userId;
+            book.borrowedAt = new Date();
+    
+            const returnDate = new Date(book.borrowedAt);
+            returnDate.setDate(returnDate.getDate() + 15);
+            book.returnDate = returnDate;
+    
+            user.borrowedBooks.push(bookId);
+    
+            await book.save();
+            await user.save();
+    
+            await logActivity(userId, 'Kitap Odunc Alma', 'Kullanici kitap odunc aldi Kitap ID :' + bookId);
+        } catch (error) {
+            throw new Error("Couldn't change book data.", { cause: "failedBookUpdate" })
         }
 
-        if (book.isAvailable) {
-                book.isAvailable = false;
-                book.loaner = userId;
-                book.borrowedAt = new Date();
-    
-                const returnDate = new Date(book.borrowedAt);
-                returnDate.setDate(returnDate.getDate() + 15);
-                book.returnDate = returnDate;
-    
-                user.borrowedBooks.push(bookId);
-                
-                await book.save();
-                await user.save();
-    
-                await logActivity(userId, 'Kitap Odunc Alma', 'Kullanici kitap odunc aldi Kitap ID :' + bookId);
-            } else {
-                throw new Error('Book is not available for loan');
-            } 
-    } catch (error) {
-        console.error('Error in loanBook:', error);
-        throw new Error('Error in loanBook');
-    }
+    } else {
+        throw new Error('Book is not available to loan.', { cause: 'unavailabilityOfBook' });
+    } 
 }
 
 export async function unloanBook(bookId: Types.ObjectId, userId: Types.ObjectId): Promise<void> {
