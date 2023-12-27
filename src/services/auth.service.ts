@@ -1,11 +1,13 @@
 import bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
+import { Types } from 'mongoose';
 
-import * as UserDataAccess from '../data-access/user';
+import { IUser } from '../models/user.model';
+import * as UserDataAccess from '../data-access/user.data-access';
 
 const secretKey = process.env.JWT_SECRET as string;
 
-export async function register(newUser: UserDataAccess.NewUser): Promise<string> {
+export async function register(newUser: IUser): Promise<string> {
   try {
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(newUser.password, saltRounds);
@@ -41,10 +43,14 @@ export async function createAdmin(newUser: IUser): Promise<string> {
 
     newUser.password = hashedPassword;
 
-    const user = new User(newUser);
-    await user.save();
+    let createdUserDocument;
+    try {
+      createdUserDocument = await UserDataAccess.createUser(newUser);
+    } catch (error) {
+      throw new Error("Couldn't create new user document on database.", { cause: "userDocumentCreation" })
+    }
 
-    const token = jwt.sign({ userId: user._id, role: user.role }, secretkey, {
+    const token = jwt.sign({ userId: createdUserDocument._id, role: createdUserDocument.role }, secretKey, {
       expiresIn: '1h', // Token expiration time
     });
 
@@ -73,7 +79,7 @@ export async function login(email: string, password: string): Promise<string> {
   return token;
 }
 
-export async function protectedRoute(userId: string) {
+export async function protectedRoute(userId: Types.ObjectId) {
   const user = await UserDataAccess.getUserById(userId);
   if (!user) {
     throw new Error("No such user is found.", { cause: "emptyQueryResult" })
