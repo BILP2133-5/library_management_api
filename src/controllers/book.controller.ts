@@ -103,9 +103,14 @@ export async function removeById(req: Request, res: Response): Promise<void> {
 
     try {
         await BookService.removeById(id);
+        
         res.json({ message: 'Book removed successfully' });
     } catch (error) {
         if (error instanceof Error) {
+            if (error.cause === "unsuccessfulDeletion") {
+                res.status(500).json({ error: error.message });
+            }
+
             res.status(500).json({ error: error.message });
         }
          

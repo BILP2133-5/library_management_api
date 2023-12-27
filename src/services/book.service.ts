@@ -94,11 +94,10 @@ export async function getBookById(bookId: Types.ObjectId): Promise<IBook | null>
     return bookDocument
 }
 
-export async function removeById(id: string): Promise<void> {
-    try {
-        await Book.findByIdAndRemove(id);
-    } catch (error) {
-        throw new Error('Error removing the book by ID');
+export async function removeById(bookId: string): Promise<void> {
+    const deletedBookDocument: Awaited<ReturnType<typeof BookDataAccess.deleteBookById>> = await BookDataAccess.deleteBookById(new Types.ObjectId(bookId));
+    if (deletedBookDocument === null) {
+        throw new Error("Book deletion was unsuccessful.", { cause: "unsuccessfulDeletion" })
     }
 }
 

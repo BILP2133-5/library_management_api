@@ -13,3 +13,7 @@ export function addNewBook(bookData: Partial<IBook>): Promise<IBookDocument> {
 export function getBookById(bookId: Types.ObjectId): Promise<IBookDocument | null> {
     return Book.findById(bookId).exec();
 }
+
+export function deleteBookById(bookId: Types.ObjectId): Promise<IBookDocument | null> {
+    return Book.findByIdAndRemove(bookId).exec(); // update the mongoose to v8 and replace findByIdAndRemove with findByIdAndDelete
+}
