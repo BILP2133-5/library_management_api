@@ -1,6 +1,6 @@
 import { Schema, Document, Types, model } from "mongoose";
 import bcrypt from "bcrypt";
-import { IBook } from "./book.model";
+import { IBookDocument } from "./book.model";
 
 
 export interface IUser {
@@ -8,7 +8,7 @@ export interface IUser {
   email: string;
   password: string;
   role: "user" | "admin" | "superadmin";
-  borrowedBooks: Types.Array<IBook["_id"]>;
+  borrowedBooks: Types.Array<IBookDocument["_id"]>;
 }
 export interface IUserDocument extends IUser, Document {
   comparePassword(candidatePassword: string): Promise<boolean>;
