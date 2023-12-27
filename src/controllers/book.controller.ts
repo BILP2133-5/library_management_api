@@ -11,9 +11,9 @@ export async function listBooks(req: Request, res: Response): Promise<void> {
     } catch (error) {
         if (error instanceof Error) {
             res.status(500).json({ error: error.message });
-        } else {
-            res.status(500).json({ error: 'Internal server error.' });
         }
+        
+        res.status(500).json({ error: 'Internal server error.' });
     }
 }
 
@@ -26,9 +26,9 @@ export async function addBook(req: Request, res: Response): Promise<void> {
     } catch (error) { 
         if (error instanceof Error) {
             res.status(500).json({ error: error.message });
-        } else {
-            res.status(500).json({ error: 'Internal server error.' });
         }
+
+        res.status(500).json({ error: 'Internal server error.' });
     }
 }
 
@@ -46,18 +46,18 @@ export async function loanBook(req: Request, res: Response): Promise<void> {
                 res.status(500).json({ error: "A failure occurred while updating the book." }); 
             } else if (error.cause === "unavailabilityOfBook") {
                 res.status(409).json({ error: "The book is currently unavailable to be loaned." }); 
-            } else {
-                res.status(500).json({ error: error.message });
             }
-        } else {
-            res.status(500).json({ error: 'Internal server error.' });
+
+            res.status(500).json({ error: error.message });
         }
+
+        res.status(500).json({ error: 'Internal server error.' });
     }
 }
 
 export async function unloanBook(req: Request, res: Response): Promise<void> {
-    const bookId: Types.ObjectId = new Types.ObjectId(req.params.bookId as string);
-    const userId: Types.ObjectId = new Types.ObjectId(req.body.userId as string);
+    const bookId = new Types.ObjectId(req.params.bookId);
+    const userId = new Types.ObjectId(req.body.userId);
 
     try {
         await BookService.unloanBook(bookId, userId);
@@ -65,10 +65,16 @@ export async function unloanBook(req: Request, res: Response): Promise<void> {
         res.status(201).json({ message: 'Book unloaned successfully' });
     } catch (error) {
         if (error instanceof Error) {
+            if (error.cause === "incompatibleBookState") {
+                res.status(409).json({ error: "The book is already not loaned." });
+            } else if (error.cause === "incorrectGivenUser") {
+                res.status(400).json({ error: "Given user can't unloan this book since the book is loaned by someone else." });
+            }
+
             res.status(500).json({ error: error.message });
-        } else {
-            res.status(500).json({ error: 'Internal server error.' });
         }
+
+        res.status(500).json({ error: 'Internal server error.' });
     }
 }
 
@@ -85,9 +91,9 @@ export async function findById(req: Request, res: Response): Promise<void> {
     } catch (error) {
         if (error instanceof Error) {
             res.status(500).json({ error: error.message });
-        } else {
-            res.status(500).json({ error: 'Internal server error.' });
         }
+    
+        res.status(500).json({ error: 'Internal server error.' });
     }
 }
 
@@ -100,9 +106,9 @@ export async function removeById(req: Request, res: Response): Promise<void> {
     } catch (error) {
         if (error instanceof Error) {
             res.status(500).json({ error: error.message });
-        } else {
-            res.status(500).json({ error: 'Internal server error.' });
         }
+         
+        res.status(500).json({ error: 'Internal server error.' });
     }
 }
 
@@ -120,9 +126,9 @@ export async function updateBook(req: Request, res: Response): Promise<void> {
     } catch (error) {
         if (error instanceof Error) {
             res.status(500).json({ error: error.message });
-        } else {
-            res.status(500).json({ error: 'Internal server error.' });
         }
+         
+        res.status(500).json({ error: 'Internal server error.' });
     }
 }
 
@@ -135,8 +141,8 @@ export async function searchBooks(req: Request, res: Response): Promise<void> {
     } catch (error) {
         if (error instanceof Error) {
             res.status(500).json({ error: error.message });
-        } else {
-            res.status(500).json({ error: 'Internal server error.' });
         }
+         
+        res.status(500).json({ error: 'Internal server error.' });
     }
 }
