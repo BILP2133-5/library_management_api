@@ -1,6 +1,6 @@
 import { Types } from 'mongoose';
 import User from '../models/user.model';
-import { IUser } from '../models/user.model';
+import { IUserDocument } from '../models/user.model';
 
 export async function getAllUsers() {
   return User.find({});
@@ -20,10 +20,10 @@ export async function getUserBorrowedBooks(userId: string) {
 
 export interface UserOrError {
   error?: string;
-  user?: IUser;
+  user?: IUserDocument;
 }
 
-export async function updateUserRole(userIdToPromote: string, role: string): Promise<IUser> {
+export async function updateUserRole(userIdToPromote: string, role: string): Promise<IUserDocument> {
 
   const updatedUser = await User.findByIdAndUpdate(userIdToPromote, { role }, { new: true });
   if (!updatedUser) {
