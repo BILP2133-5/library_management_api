@@ -1,13 +1,11 @@
 import { Request, Response } from 'express';
-import * as userService from '../services/user.service';
 
-function isValidRole(role: string): boolean {
-  return role === 'admin' || role === 'user';
-}
+import * as UserService from '../services/user.service';
+import * as UserLogic from '../logic/user.logic';
 
 export async function getAllUsers(req: Request, res: Response): Promise<void> {
   try {
-    const users = await userService.getAllUsers();
+    const users = await UserService.getAllUsers();
     res.json(users);
   } catch (error) {
     if (error instanceof Error) {
@@ -22,7 +20,7 @@ export async function getUserByID(req: Request, res: Response): Promise<void> {
   const userId = req.params.userId;
 
   try {
-    const user = await userService.getUserByID(userId);
+    const user = await UserService.getUserByID(userId);
     if (user) {
       res.json(user);
     } else {
@@ -40,7 +38,7 @@ export async function getUserByID(req: Request, res: Response): Promise<void> {
 export async function getUserBorrowedBooks(req: Request, res: Response): Promise<void> {
   const userId = req.params.userId;
   try {
-    const borrowedBooks = await userService.getUserBorrowedBooks(userId);
+    const borrowedBooks = await UserService.getUserBorrowedBooks(userId);
 
     if (!borrowedBooks) {
       res.status(404).json({ error: 'User not found' });
@@ -59,13 +57,13 @@ export async function getUserBorrowedBooks(req: Request, res: Response): Promise
 export async function updateUserRole(req: Request, res: Response): Promise<void> {
   const { userIdToPromote, role } = req.body;
 
-  if (!isValidRole(role)) {
+  if (!UserLogic.isValidRole(role)) {
      res.status(400).json({ error: 'Invalid role. Role must be "admin","superadmin" or "user".' });
      return;
   }
 
   try {
-    const result = await userService.updateUserRole(userIdToPromote, role);
+    const result = await UserService.updateUserRole(userIdToPromote, role);
     
     res.json(result);
   } catch (error) {
@@ -83,7 +81,7 @@ export async function removeUserByID(req: Request, res: Response): Promise<void>
   const id = req.params.id;
 
   try {
-    await userService.removeUserByID(id);
+    await UserService.removeUserByID(id);
     res.json({ message: 'User removed successfully' });
   } catch (error) {
     if (error instanceof Error) {
