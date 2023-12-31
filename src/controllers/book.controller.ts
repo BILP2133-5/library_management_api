@@ -108,7 +108,7 @@ export async function removeBookById(req: Request, res: Response): Promise<void>
     } catch (error) {
         if (error instanceof Error) {
             if (error.cause === "unsuccessfulDeletion") {
-                res.status(500).json({ error: "Couldn't delete the book from the database." });
+                res.status(500).json({ error: "The book to delete wasn't found in the database." });
             }
 
             res.status(500).json({ error: error.message });
@@ -119,18 +119,18 @@ export async function removeBookById(req: Request, res: Response): Promise<void>
 }
 
 export async function updateBook(req: Request, res: Response): Promise<void> {
-    const id = req.params.id;
-    const updatedBookData: Partial<IBook> = req.body;
-
     try {
+        const id = req.params.id;
+        const updatedBookData: Partial<IBook> = req.body;
+        
         const updatedBook = await BookService.updateBook(id, updatedBookData);
-        if (updatedBook) {
-            res.json(updatedBook);
-        } else {
-            res.status(404).json({ error: 'Book not found' });
-        }
+        res.json(updatedBook);
     } catch (error) {
         if (error instanceof Error) {
+            if (error.cause === "unsuccessfulUpdateQuery") {
+                res.status(500).json({ error: "Book couldn't get updated." });
+            }
+
             res.status(500).json({ error: error.message });
         }
          

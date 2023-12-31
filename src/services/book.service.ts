@@ -8,11 +8,15 @@ import * as BookDataAccess from '../data-access/book.data-access';
 import * as UserDataAccess from '../data-access/user.data-access';
 
 export async function listBooks(): Promise<IBook[]> {
-    return await BookDataAccess.getAllBooks();
+    const allBooks: Awaited<ReturnType<typeof BookDataAccess.getAllBooks>> = await BookDataAccess.getAllBooks();
+
+    return allBooks;
 }
 
 export async function addBook(bookData: Partial<IBook>): Promise<IBook> {
-    return await BookDataAccess.addNewBook(bookData);
+    const newBook: Awaited<ReturnType<typeof BookDataAccess.addNewBook>> = await BookDataAccess.addNewBook(bookData);
+
+    return newBook;
 }
 
 export async function loanBook(bookId: Types.ObjectId, userId: Types.ObjectId): Promise<void> {
@@ -86,7 +90,7 @@ export async function unloanBook(bookId: Types.ObjectId, userId: Types.ObjectId)
 
 
 export async function getBookById(bookId: Types.ObjectId): Promise<IBook | null> {
-    const bookDocument = await BookDataAccess.getBookById(bookId);
+    const bookDocument: Awaited<ReturnType<typeof BookDataAccess.getBookById>> = await BookDataAccess.getBookById(bookId);
     if (bookDocument === null) {
         throw new Error("Book with the given id doesn't exist.", { cause: "emptyQueryResult" });
     }
@@ -97,16 +101,17 @@ export async function getBookById(bookId: Types.ObjectId): Promise<IBook | null>
 export async function removeBookById(bookId: string): Promise<void> {
     const deletedBookDocument: Awaited<ReturnType<typeof BookDataAccess.deleteBookById>> = await BookDataAccess.deleteBookById(new Types.ObjectId(bookId));
     if (deletedBookDocument === null) {
-        throw new Error("Book deletion was unsuccessful.", { cause: "unsuccessfulDeletion" })
+        throw new Error("The book to delete wasn't found in the database.", { cause: "unsuccessfulDeletion" })
     }
 }
 
 export async function updateBook(id: string, updatedBookData: Partial<IBook>): Promise<IBook | null> {
-    try {
-        return await Book.findByIdAndUpdate(id, updatedBookData, { new: true });
-    } catch (error) {
-        throw new Error('Error updating the book');
+    const updatedBook: Awaited<ReturnType<typeof BookDataAccess.findBookByIdAndUpdate>> = await BookDataAccess.findBookByIdAndUpdate(new Types.ObjectId(id), updatedBookData);
+    if (updatedBook === null) {
+        throw new Error("Book couldn't get updated.", { cause: "unsuccessfulUpdateQuery" })
     }
+
+    return updatedBook;
 }
 
 export async function searchBooks(query: string): Promise<IBook[] | null> {
