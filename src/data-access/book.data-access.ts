@@ -15,5 +15,5 @@ export function getBookById(bookId: Types.ObjectId): Promise<IBookDocument | nul
 }
 
 export function deleteBookById(bookId: Types.ObjectId): Promise<IBookDocument | null> {
-    return Book.findByIdAndRemove(bookId).exec(); // update the mongoose to v8 and replace findByIdAndRemove with findByIdAndDelete
+    return Book.findByIdAndRemove(bookId).exec(); // TODO: update the mongoose to v8 and replace findByIdAndRemove with findByIdAndDelete
 }
