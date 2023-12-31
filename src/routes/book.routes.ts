@@ -11,6 +11,6 @@ bookRouter.put('/update/:id', BookController.updateBook);
 bookRouter.post('/add', BookController.addBook);
 bookRouter.post('/loan/:bookId', BookController.loanBook);
 
-bookRouter.delete('/remove/:id', BookController.removeById);
+bookRouter.delete('/remove/:id', BookController.removeBookById);
 
 export default bookRouter;

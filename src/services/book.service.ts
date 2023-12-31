@@ -94,7 +94,7 @@ export async function getBookById(bookId: Types.ObjectId): Promise<IBook | null>
     return bookDocument
 }
 
-export async function removeById(bookId: string): Promise<void> {
+export async function removeBookById(bookId: string): Promise<void> {
     const deletedBookDocument: Awaited<ReturnType<typeof BookDataAccess.deleteBookById>> = await BookDataAccess.deleteBookById(new Types.ObjectId(bookId));
     if (deletedBookDocument === null) {
         throw new Error("Book deletion was unsuccessful.", { cause: "unsuccessfulDeletion" })

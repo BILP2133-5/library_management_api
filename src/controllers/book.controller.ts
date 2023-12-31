@@ -98,11 +98,11 @@ export async function getBookById(req: Request, res: Response): Promise<void> {
     }
 }
 
-export async function removeById(req: Request, res: Response): Promise<void> {
+export async function removeBookById(req: Request, res: Response): Promise<void> {
     const id = req.params.id;
 
     try {
-        await BookService.removeById(id);
+        await BookService.removeBookById(id);
         
         res.json({ message: 'Book removed successfully' });
     } catch (error) {
