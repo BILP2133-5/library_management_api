@@ -33,10 +33,10 @@ export async function addBook(req: Request, res: Response): Promise<void> {
 }
 
 export async function loanBook(req: Request, res: Response): Promise<void> {
-    const bookId: Types.ObjectId = new Types.ObjectId(req.params.bookId as string);
-    const userId: Types.ObjectId = new Types.ObjectId(req.body.userId as string);
-
     try {
+        const bookId: Types.ObjectId = new Types.ObjectId(req.params.bookId as string);
+        const userId: Types.ObjectId = new Types.ObjectId(req.body.userId as string);
+
         await BookService.loanBook(bookId, userId);
 
         res.status(201).json({ message: 'Book loaned/unloaned successfully' });
@@ -56,10 +56,10 @@ export async function loanBook(req: Request, res: Response): Promise<void> {
 }
 
 export async function unloanBook(req: Request, res: Response): Promise<void> {
-    const bookId = new Types.ObjectId(req.params.bookId);
-    const userId = new Types.ObjectId(req.body.userId);
-
     try {
+        const bookId = new Types.ObjectId(req.params.bookId);
+        const userId = new Types.ObjectId(req.body.userId);
+
         await BookService.unloanBook(bookId, userId);
 
         res.status(201).json({ message: 'Book unloaned successfully' });
@@ -79,9 +79,9 @@ export async function unloanBook(req: Request, res: Response): Promise<void> {
 }
 
 export async function getBookById(req: Request, res: Response): Promise<void> {
-    const bookId = new Types.ObjectId(req.params.id);
-
     try {
+        const bookId = new Types.ObjectId(req.params.id);
+
         const book = await BookService.getBookById(bookId);
 
         res.send(200).json(book);
@@ -99,16 +99,16 @@ export async function getBookById(req: Request, res: Response): Promise<void> {
 }
 
 export async function removeBookById(req: Request, res: Response): Promise<void> {
-    const id = req.params.id;
-
     try {
+        const id = req.params.id;
+        
         await BookService.removeBookById(id);
         
         res.json({ message: 'Book removed successfully' });
     } catch (error) {
         if (error instanceof Error) {
             if (error.cause === "unsuccessfulDeletion") {
-                res.status(500).json({ error: error.message });
+                res.status(500).json({ error: "Couldn't delete the book from the database." });
             }
 
             res.status(500).json({ error: error.message });
