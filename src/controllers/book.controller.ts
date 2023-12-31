@@ -146,6 +146,12 @@ export async function searchBooks(req: Request, res: Response): Promise<void> {
         res.json(results);
     } catch (error) {
         if (error instanceof Error) {
+            if (error.cause === "missingQueryParameter") {
+                res.status(400).json({ error: "The query parameter wasn't sent." });
+            } else if (error.cause === "emptyQueryResult") {
+                res.status(404).json({ error: "Given query didn't find any book documents." });
+            }
+
             res.status(500).json({ error: error.message });
         }
          

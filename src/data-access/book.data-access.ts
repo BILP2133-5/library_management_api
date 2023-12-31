@@ -21,3 +21,11 @@ export function deleteBookById(bookId: Types.ObjectId): Promise<IBookDocument | 
 export function findBookByIdAndUpdate(bookId: Types.ObjectId, updatedBookData: Partial<IBook>): Promise<IBookDocument | null> {
     return Book.findByIdAndUpdate(bookId, updatedBookData, { new: true }).exec();
 }
+
+export function searchBooks(query: string, updatedBookData: Partial<IBook>): Promise<IBookDocument[] | null> {
+    const regexQuery = { $regex: new RegExp(query, 'i') };
+
+    return Book.find({
+        $or: [{ bookName: regexQuery }, { author: regexQuery }],
+    }).exec();
+}
