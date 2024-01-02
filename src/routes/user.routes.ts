@@ -5,7 +5,7 @@ import { authorize } from '../middleware/authMiddleware';
 const userRouter = express.Router();
 
 userRouter.get('/', userController.getAllUsers);
-userRouter.get('/:userId', userController.getUserByID);
+userRouter.get('/:userId', userController.getUserById);
 userRouter.get('/borrowedBook/:userId',userController.getUserBorrowedBooks);
 
 userRouter.put('/updaterole', authorize, userController.updateUserRole);

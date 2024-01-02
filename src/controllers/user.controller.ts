@@ -6,6 +6,7 @@ import * as UserLogic from '../logic/user.logic';
 export async function getAllUsers(req: Request, res: Response): Promise<void> {
   try {
     const users = await UserService.getAllUsers();
+
     res.json(users);
   } catch (error) {
     if (error instanceof Error) {
@@ -16,18 +17,19 @@ export async function getAllUsers(req: Request, res: Response): Promise<void> {
   }
 }
 
-export async function getUserByID(req: Request, res: Response): Promise<void> {
+export async function getUserById(req: Request, res: Response): Promise<void> {
   const userId = req.params.userId;
 
   try {
-    const user = await UserService.getUserByID(userId);
-    if (user) {
-      res.json(user);
-    } else {
-      res.status(404).json({ error: 'User not found' });
-    }
+    const user = await UserService.getUserById(userId);
+
+    res.json(user);
   } catch (error) {
     if (error instanceof Error) {
+      if (error.cause === "emptyQueryResult") {
+        res.status(404).json("User not found.");
+      }
+
       res.status(500).json({ error: error.message });  
     }
 
@@ -36,17 +38,17 @@ export async function getUserByID(req: Request, res: Response): Promise<void> {
 }
 
 export async function getUserBorrowedBooks(req: Request, res: Response): Promise<void> {
-  const userId = req.params.userId;
   try {
+    const userId = req.params.userId;
     const borrowedBooks = await UserService.getUserBorrowedBooks(userId);
-
-    if (!borrowedBooks) {
-      res.status(404).json({ error: 'User not found' });
-    }
 
     res.json(borrowedBooks);
   } catch (error) {
     if (error instanceof Error) {
+      if (error.cause === "emptyQueryResult") {
+        res.status(404).json({ error: 'User not found' });
+      }
+
       res.status(500).json({ error: error.message });  
     }
 
