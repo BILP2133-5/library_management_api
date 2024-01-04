@@ -10,10 +10,10 @@ export async function getAllUsers(req: Request, res: Response): Promise<void> {
     return void res.json(users);
   } catch (error) {
     if (error instanceof Error) {
-      return void res.sendStatus(500).json({ error: error.message });  
+      return void res.json({ error: error.message });  
     }
 
-    return void res.sendStatus(500).json({ error: 'Internal server error.' });
+    return void res.json({ error: 'Internal server error.' });
   }
 }
 
@@ -27,13 +27,13 @@ export async function getUserById(req: Request, res: Response): Promise<void> {
   } catch (error) {
     if (error instanceof Error) {
       if (error.cause === "emptyQueryResult") {
-        return void res.sendStatus(404).json("User not found.");
+        return void res.json("User not found.");
       }
 
-      return void res.sendStatus(500).json({ error: error.message });  
+      return void res.json({ error: error.message });  
     }
 
-    return void res.sendStatus(500).json({ error: 'Internal server error.' });
+    return void res.json({ error: 'Internal server error.' });
   }
 }
 
@@ -46,13 +46,13 @@ export async function getUserBorrowedBooks(req: Request, res: Response): Promise
   } catch (error) {
     if (error instanceof Error) {
       if (error.cause === "emptyQueryResult") {
-        return void res.sendStatus(404).json({ error: 'User not found' });
+        return void res.json({ error: 'User not found' });
       }
 
-      return void res.sendStatus(500).json({ error: error.message });  
+      return void res.json({ error: error.message });  
     }
 
-    return void res.sendStatus(500).json({ error: 'Internal server error.' });
+    return void res.json({ error: 'Internal server error.' });
   }
 }
 
@@ -64,9 +64,9 @@ export async function removeUserByID(req: Request, res: Response): Promise<void>
     return void res.json({ message: 'User removed successfully' });
   } catch (error) {
     if (error instanceof Error) {
-      return void res.sendStatus(500).json({ error: error.message });  
+      return void res.json({ error: error.message });  
     }
 
-    return void res.sendStatus(500).json({ error: 'Internal server error.' });
+    return void res.json({ error: 'Internal server error.' });
   }
 }

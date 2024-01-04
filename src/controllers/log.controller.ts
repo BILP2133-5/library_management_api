@@ -7,9 +7,9 @@ export async function listLogs(req: Request, res: Response): Promise<void> {
         return void res.json(logs);
     } catch (error) {
         if (error instanceof Error) {
-            return void res.sendStatus(500).json({ error: error.message });
+            return void res.json({ error: error.message });
         }
 
-        return void res.sendStatus(500).json({ error: 'Internal server error' });
+        return void res.json({ error: 'Internal server error' });
     }
 }
