@@ -6,9 +6,9 @@ const secretkey = process.env.JWT_SECRET as string;
 export const authenticate = (req: Request, res: Response, next: NextFunction) => {
   const authenticationHeader = req.header('Authorization');
   if (typeof authenticationHeader === "undefined") {
-    return void res.status(400).json({ error: 'Authentication token is required.' });
+    return void res.sendStatus(400).json({ error: 'Authentication token is required.' });
   } else if(!authenticationHeader.startsWith('Bearer ')) {
-    return void res.status(400).json({ error: 'Invalid authentication token format.' });
+    return void res.sendStatus(400).json({ error: 'Invalid authentication token format.' });
   }
   
   let result;
@@ -17,7 +17,7 @@ export const authenticate = (req: Request, res: Response, next: NextFunction) =>
     result = jwt.verify(authenticationToken, secretkey);
     (req as any).user = result;
   } catch (error) {
-    return void res.status(400).json({ error: 'Given token is either incorrect or expired.' });
+    return void res.sendStatus(400).json({ error: 'Given token is either incorrect or expired.' });
   }
 
   next();
@@ -29,7 +29,7 @@ export const authorize = (allowedRoles : string[]) => async (req: Request, res: 
 
   const isAuthorized = allowedRoles.includes(userRole);
   if (!isAuthorized) {
-    return void res.status(403).json({ error: "Access denied. This user doesn't have necessary role to do the operation." });
+    return void res.sendStatus(403).json({ error: "Access denied. This user doesn't have necessary role to do the operation." });
   }
 
   next();
