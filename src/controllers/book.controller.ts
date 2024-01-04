@@ -10,10 +10,10 @@ export async function listBooks(req: Request, res: Response): Promise<void> {
         res.status(200).json(books);
     } catch (error) {
         if (error instanceof Error) {
-            res.status(500).json({ error: error.message });
+            return void res.status(500).json({ error: error.message });
         }
         
-        res.status(500).json({ error: 'Internal server error.' });
+        return void res.status(500).json({ error: 'Internal server error.' });
     }
 }
 
@@ -25,10 +25,10 @@ export async function addBook(req: Request, res: Response): Promise<void> {
         res.status(201).json(newBook);
     } catch (error) { 
         if (error instanceof Error) {
-            res.status(500).json({ error: error.message });
+            return void res.status(500).json({ error: error.message });
         }
 
-        res.status(500).json({ error: 'Internal server error.' });
+        return void res.status(500).json({ error: 'Internal server error.' });
     }
 }
 
@@ -43,19 +43,19 @@ export async function loanBook(req: Request, res: Response): Promise<void> {
     } catch (error) {
         if (error instanceof Error) {
             if (error.cause === "emptyBookQueryResult") {
-                res.status(404).json({ error: "Given book not found." }); 
+                return void res.status(404).json({ error: "Given book not found." }); 
             } else if (error.cause === "alreadyLoaned") {
-                res.status(400).json({ error: "Given book is already loaned." }); 
+                return void res.status(400).json({ error: "Given book is already loaned." }); 
             } else if (error.cause === "emptyUserQueryResult") {
-                res.status(404).json({ error: "Given user not found." }); 
+                return void res.status(404).json({ error: "Given user not found." }); 
             } else if (error.cause === "failedBookUpdate") {
-                res.status(500).json({ error: "A failure occurred while updating the book." }); 
+                return void res.status(500).json({ error: "A failure occurred while updating the book." }); 
             }
 
-            res.status(500).json({ error: error.message });
+            return void res.status(500).json({ error: error.message });
         }
 
-        res.status(500).json({ error: 'Internal server error.' });
+        return void res.status(500).json({ error: 'Internal server error.' });
     }
 }
 
@@ -70,15 +70,15 @@ export async function unloanBook(req: Request, res: Response): Promise<void> {
     } catch (error) {
         if (error instanceof Error) {
             if (error.cause === "incompatibleBookState") {
-                res.status(409).json({ error: "The book is already not loaned." });
+                return void res.status(409).json({ error: "The book is already not loaned." });
             } else if (error.cause === "incorrectGivenUser") {
-                res.status(400).json({ error: "Given user can't unloan this book since the book is loaned by someone else." });
+                return void res.status(400).json({ error: "Given user can't unloan this book since the book is loaned by someone else." });
             }
 
-            res.status(500).json({ error: error.message });
+            return void res.status(500).json({ error: error.message });
         }
 
-        res.status(500).json({ error: 'Internal server error.' });
+        return void res.status(500).json({ error: 'Internal server error.' });
     }
 }
 
@@ -92,13 +92,13 @@ export async function getBookById(req: Request, res: Response): Promise<void> {
     } catch (error) {
         if (error instanceof Error) {
             if (error.cause === "emptyQueryResult") {
-                res.status(404).json({ error: "Book with the given id doesn't exist." });
+                return void res.status(404).json({ error: "Book with the given id doesn't exist." });
             }
 
-            res.status(500).json({ error: error.message });
+            return void res.status(500).json({ error: error.message });
         }
     
-        res.status(500).json({ error: 'Internal server error.' });
+        return void res.status(500).json({ error: 'Internal server error.' });
     }
 }
 
@@ -112,13 +112,13 @@ export async function removeBookById(req: Request, res: Response): Promise<void>
     } catch (error) {
         if (error instanceof Error) {
             if (error.cause === "unsuccessfulDeletion") {
-                res.status(500).json({ error: "The book to delete wasn't found in the database." });
+                return void res.status(500).json({ error: "The book to delete wasn't found in the database." });
             }
 
-            res.status(500).json({ error: error.message });
+            return void res.status(500).json({ error: error.message });
         }
          
-        res.status(500).json({ error: 'Internal server error.' });
+        return void res.status(500).json({ error: 'Internal server error.' });
     }
 }
 
@@ -132,13 +132,13 @@ export async function updateBook(req: Request, res: Response): Promise<void> {
     } catch (error) {
         if (error instanceof Error) {
             if (error.cause === "unsuccessfulUpdateQuery") {
-                res.status(500).json({ error: "Book couldn't get updated." });
+                return void res.status(500).json({ error: "Book couldn't get updated." });
             }
 
-            res.status(500).json({ error: error.message });
+            return void res.status(500).json({ error: error.message });
         }
          
-        res.status(500).json({ error: 'Internal server error.' });
+        return void res.status(500).json({ error: 'Internal server error.' });
     }
 }
 
@@ -151,14 +151,14 @@ export async function searchBooks(req: Request, res: Response): Promise<void> {
     } catch (error) {
         if (error instanceof Error) {
             if (error.cause === "missingQueryParameter") {
-                res.status(400).json({ error: "The query parameter wasn't sent." });
+                return void res.status(400).json({ error: "The query parameter wasn't sent." });
             } else if (error.cause === "emptyQueryResult") {
-                res.status(404).json({ error: "Given query didn't find any book documents." });
+                return void res.status(404).json({ error: "Given query didn't find any book documents." });
             }
 
-            res.status(500).json({ error: error.message });
+            return void res.status(500).json({ error: error.message });
         }
          
-        res.status(500).json({ error: 'Internal server error.' });
+        return void res.status(500).json({ error: 'Internal server error.' });
     }
 }
