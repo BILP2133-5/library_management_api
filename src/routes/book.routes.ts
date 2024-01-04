@@ -5,7 +5,7 @@ import { authorize } from '../middleware/authMiddleware';
 
 const bookRouter = express.Router();
 
-bookRouter.get('/', authorize(undefined), BookController.listBooks);
+bookRouter.get('/', BookController.listBooks);
 bookRouter.get('/:id', BookController.getBookById);
 bookRouter.get('/search/:query', BookController.searchBooks);
 
