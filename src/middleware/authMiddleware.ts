@@ -5,7 +5,7 @@ const secretkey = process.env.JWT_SECRET as string;
 
 function authenticate(authenticationHeader : string | undefined) {
   if (typeof authenticationHeader === "undefined") {
-    throw new Error("Nonexistent auth headear", { cause: "nonexistence" })
+    throw new Error("Nonexistent auth header", { cause: "nonexistence" })
   }
   if(!authenticationHeader.startsWith('Bearer ')) {
     throw new Error("Invalid authentication token format", { cause: "format" })
@@ -17,7 +17,7 @@ function authenticate(authenticationHeader : string | undefined) {
   try {
     result = jwt.verify(authenticationToken, secretkey);
   } catch (error) {
-    throw new Error("Incorrect or expired token.");
+    throw new Error("Incorrect or expired token.", { cause: "incorrectOrExpiredToken" });
   }
 
   return result;
@@ -31,7 +31,7 @@ export const authorize = (allowedRoles : string[] | undefined) => (req: Request,
 
     if(typeof allowedRoles !== "undefined") { // authorize if any roles are given
       if (!allowedRoles.includes((req as any).user.role)) {
-        res.status(403).json({ error: "Access denied. This user doesn't have necessary role to do the operation." });
+        return void res.status(403).json({ error: "Access denied. This user doesn't have necessary role to do the operation." });
       }
     }
 
@@ -39,12 +39,14 @@ export const authorize = (allowedRoles : string[] | undefined) => (req: Request,
   } catch (error : any) {
     console.error("JWT Verification Error:", error);
 
-    if (error.cause = "nonexistence") {
-      res.status(401).json({ error: 'Authentication token is required' });
-    } else if (error.cause = "format") {
-      res.status(401).json({ error: 'Invalid authentication format' })
-    } else {
-      res.status(401).json({ error: 'Invalid token' });
+    if (error.cause === "nonexistence") {
+      return void res.status(401).json({ error: 'Authentication token is required.' });
+    } else if (error.cause === "format") {
+      return void res.status(401).json({ error: 'Invalid authentication format.' })
+    } else if (error.cause === "incorrectOrExpiredToken") {
+      return void res.status(401).json({ error: 'Given token is either incorrect or expired.' });
     }
+
+    return void res.status(500).json({ error: "Internal server error." })
   }
 };
