@@ -12,17 +12,17 @@ export const register = async (req: Request, res: Response): Promise<void> => {
   } catch (error) {
     if (error instanceof Error) {
       if (error.cause === "passwordHashing") {
-        res.status(500).json({ error: "Internal server error while password hashing." });
+        return void res.status(500).json({ error: "Internal server error while password hashing." });
       } else if (error.cause === "userDocumentCreation") {
-        res.status(500).json({ error: "Internal server error while trying to create a new user document." })
+        return void res.status(500).json({ error: "Internal server error while trying to create a new user document." })
       } else if (error.cause === "jwtTokenSigning") {
-        res.status(500).json({ error: "Internal server error while trying to sign the JWT token." })
+        return void res.status(500).json({ error: "Internal server error while trying to sign the JWT token." })
       }
        
-      res.status(500).json({ error: error.message });
+      return void res.status(500).json({ error: error.message });
     }
      
-    res.status(500).json({ error: "Internal server error." });
+    return void res.status(500).json({ error: "Internal server error." });
   }
 };
 
@@ -34,15 +34,15 @@ export const login = async (req: Request, res: Response): Promise<void> => {
   } catch (error) {
     if (error instanceof Error) {
       if (error.cause === "emptyQueryResult") {
-        res.status(404).json({ error: "There's no such user." });
+        return void res.status(404).json({ error: "There's no such user." });
       } else if (error.cause === 'incorrectPassword') {
-        res.status(401).json({ error: "Given password is incorrect." });
+        return void res.status(401).json({ error: "Given password is incorrect." });
       }
        
-      res.status(500).json({ error: error.message });
+      return void res.status(500).json({ error: error.message });
     }
      
-    res.status(500).json({ error: "Internal server error." });
+    return void res.status(500).json({ error: "Internal server error." });
   }
 };
 
@@ -55,10 +55,10 @@ export const createAdmin = async (req: Request, res: Response): Promise<void> =>
     res.status(200).json({ token });
   } catch (error) {
     if (error instanceof Error) {
-      res.status(400).json({ error: error.message });
+      return void res.status(400).json({ error: error.message });
     }
      
-    res.status(500).json({ error: "Internal server error." });
+    return void res.status(500).json({ error: "Internal server error." });
   }
 };
 
@@ -72,12 +72,12 @@ export const protectedRoute = async (req: Request, res: Response) => {
   } catch (error) {
     if (error instanceof Error) {
       if (error.cause === "emptyQueryResult") {
-        res.status(404).json({ error: 'User not found' });
+        return void res.status(404).json({ error: 'User not found' });
       }
        
-      res.status(500).json({ error: error.message });
+      return void res.status(500).json({ error: error.message });
     }
      
-    res.status(500).json({ error: "Internal server error." });
+    return void res.status(500).json({ error: "Internal server error." });
   }
 };
