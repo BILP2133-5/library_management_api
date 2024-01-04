@@ -39,7 +39,7 @@ export async function loanBook(req: Request, res: Response): Promise<void> {
 
         await BookService.loanBook(bookId, userId);
 
-        res.status(201).json({ message: 'Book loaned/unloaned successfully' });
+        res.status(201).json({ message: 'Book loaned successfully' });
     } catch (error) {
         if (error instanceof Error) {
             if (error.cause === "emptyBookQueryResult") {
