@@ -59,6 +59,8 @@ export async function unloanBook(bookId: Types.ObjectId, userId: Types.ObjectId)
     const book: Awaited<ReturnType<typeof BookDataAccess.getBookById>> = await BookDataAccess.getBookById(bookId);
     if (book === null) {
         throw new Error('Book not found.', { cause: 'Empty query result.' });
+    } else if (book.isAvailable) {
+        throw new Error('The book is not currently on loan.', { cause: 'incompatibleBookState' });
     }
 
     const user: Awaited<ReturnType<typeof UserDataAccess.getUserById>> = await UserDataAccess.getUserById(userId);
@@ -66,11 +68,6 @@ export async function unloanBook(bookId: Types.ObjectId, userId: Types.ObjectId)
         throw new Error('User not found.', { cause: 'Empty query result.' });
     }
 
-    if (book.isAvailable) {
-        throw new Error('The book is not currently on loan.', { cause: 'incompatibleBookState' });
-    } else if (book?.loaner?.equals(userId)) {
-        throw new Error('You are not the loaner of this book.', { cause: 'incorrectGivenUser' });
-    }
     try {
         book.isAvailable = true;
         book.loaner = null;
