@@ -8,7 +8,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     const newUser = req.body;
     const token = await AuthService.register(newUser);
 
-    res.sendStatus(200).json({ token });
+    return void res.sendStatus(200).json({ token });
   } catch (error) {
     if (error instanceof Error) {
       if (error.cause === "invalidUserRole") {
@@ -33,7 +33,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     const { email, password } = req.body;
     const token = await AuthService.login(email, password);
     
-    res.sendStatus(200).json({ token });
+    return void res.sendStatus(200).json({ token });
   } catch (error) {
     if (error instanceof Error) {
       if (error.cause === "emptyQueryResult") {
@@ -57,7 +57,7 @@ export const createAdmin = async (req: Request, res: Response): Promise<void> =>
     newUser.role = 'admin';
 
     const token = await AuthService.register(newUser);
-    res.sendStatus(200).json({ token });
+    return void res.sendStatus(200).json({ token });
   } catch (error) {
     if (error instanceof Error) {
       return void res.sendStatus(400).json({ error: error.message });
@@ -73,7 +73,7 @@ export const protectedRoute = async (req: Request, res: Response) => {
   try {
     const user = await AuthService.protectedRoute(userId);
 
-    res.sendStatus(200).json({ user });
+    return void res.sendStatus(200).json({ user });
   } catch (error) {
     if (error instanceof Error) {
       if (error.cause === "emptyQueryResult") {

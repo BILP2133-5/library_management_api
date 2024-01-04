@@ -7,7 +7,7 @@ export async function listBooks(req: Request, res: Response): Promise<void> {
     try {
         const books = await BookService.listBooks();
 
-        res.sendStatus(200).json(books);
+        return void res.sendStatus(200).json(books);
     } catch (error) {
         if (error instanceof Error) {
             return void res.sendStatus(500).json({ error: error.message });
@@ -22,7 +22,7 @@ export async function addBook(req: Request, res: Response): Promise<void> {
         const bookData: Partial<IBook> = req.body;
         const newBook = await BookService.addBook(bookData);
         
-        res.sendStatus(201).json(newBook);
+        return void res.sendStatus(201).json(newBook);
     } catch (error) { 
         if (error instanceof Error) {
             return void res.sendStatus(500).json({ error: error.message });
@@ -39,7 +39,7 @@ export async function loanBook(req: Request, res: Response): Promise<void> {
 
         await BookService.loanBook(bookId, userId);
 
-        res.sendStatus(201).json({ message: 'Book loaned successfully' });
+        return void res.sendStatus(201).json({ message: 'Book loaned successfully' });
     } catch (error) {
         if (error instanceof Error) {
             if (error.cause === "emptyBookQueryResult") {
@@ -66,7 +66,7 @@ export async function unloanBook(req: Request, res: Response): Promise<void> {
 
         await BookService.unloanBook(bookId, userId);
 
-        res.sendStatus(201).json({ message: 'Book unloaned successfully' });
+        return void res.sendStatus(201).json({ message: 'Book unloaned successfully' });
     } catch (error) {
         if (error instanceof Error) {
             if (error.cause === "incompatibleBookState") {
@@ -88,7 +88,7 @@ export async function getBookById(req: Request, res: Response): Promise<void> {
 
         const book = await BookService.getBookById(bookId);
 
-        res.send(200).json(book);
+        return void res.send(200).json(book);
     } catch (error) {
         if (error instanceof Error) {
             if (error.cause === "emptyQueryResult") {
@@ -108,7 +108,7 @@ export async function removeBookById(req: Request, res: Response): Promise<void>
         
         await BookService.removeBookById(id);
         
-        res.json({ message: 'Book removed successfully' });
+        return void res.json({ message: 'Book removed successfully' });
     } catch (error) {
         if (error instanceof Error) {
             if (error.cause === "unsuccessfulDeletion") {
@@ -128,7 +128,7 @@ export async function updateBook(req: Request, res: Response): Promise<void> {
         const updatedBookData: Partial<IBook> = req.body;
         
         const updatedBook = await BookService.updateBook(id, updatedBookData);
-        res.json(updatedBook);
+        return void res.json(updatedBook);
     } catch (error) {
         if (error instanceof Error) {
             if (error.cause === "unsuccessfulUpdateQuery") {
@@ -147,7 +147,7 @@ export async function searchBooks(req: Request, res: Response): Promise<void> {
         const query = req.params.query; 
         const results = await BookService.searchBooks(query);
       
-        res.json(results);
+        return void res.json(results);
     } catch (error) {
         if (error instanceof Error) {
             if (error.cause === "missingQueryParameter") {

@@ -7,7 +7,7 @@ export async function getAllUsers(req: Request, res: Response): Promise<void> {
   try {
     const users = await UserService.getAllUsers();
 
-    res.json(users);
+    return void res.json(users);
   } catch (error) {
     if (error instanceof Error) {
       return void res.sendStatus(500).json({ error: error.message });  
@@ -23,7 +23,7 @@ export async function getUserById(req: Request, res: Response): Promise<void> {
   try {
     const user = await UserService.getUserById(userId);
 
-    res.json(user);
+    return void res.json(user);
   } catch (error) {
     if (error instanceof Error) {
       if (error.cause === "emptyQueryResult") {
@@ -42,7 +42,7 @@ export async function getUserBorrowedBooks(req: Request, res: Response): Promise
     const userId = req.params.userId;
     const borrowedBooks = await UserService.getUserBorrowedBooks(userId);
 
-    res.json(borrowedBooks);
+    return void res.json(borrowedBooks);
   } catch (error) {
     if (error instanceof Error) {
       if (error.cause === "emptyQueryResult") {
@@ -61,7 +61,7 @@ export async function removeUserByID(req: Request, res: Response): Promise<void>
 
   try {
     await UserService.removeUserByID(id);
-    res.json({ message: 'User removed successfully' });
+    return void res.json({ message: 'User removed successfully' });
   } catch (error) {
     if (error instanceof Error) {
       return void res.sendStatus(500).json({ error: error.message });  
