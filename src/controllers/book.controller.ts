@@ -42,10 +42,14 @@ export async function loanBook(req: Request, res: Response): Promise<void> {
         res.status(201).json({ message: 'Book loaned/unloaned successfully' });
     } catch (error) {
         if (error instanceof Error) {
-            if (error.cause === "failedBookUpdate") {
+            if (error.cause === "emptyBookQueryResult") {
+                res.status(404).json({ error: "Given book not found." }); 
+            } else if (error.cause === "alreadyLoaned") {
+                res.status(400).json({ error: "Given book is already loaned." }); 
+            } else if (error.cause === "emptyUserQueryResult") {
+                res.status(404).json({ error: "Given user not found." }); 
+            } else if (error.cause === "failedBookUpdate") {
                 res.status(500).json({ error: "A failure occurred while updating the book." }); 
-            } else if (error.cause === "unavailabilityOfBook") {
-                res.status(409).json({ error: "The book is currently unavailable to be loaned." }); 
             }
 
             res.status(500).json({ error: error.message });

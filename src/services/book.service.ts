@@ -22,37 +22,34 @@ export async function addBook(bookData: Partial<IBook>): Promise<IBook> {
 export async function loanBook(bookId: Types.ObjectId, userId: Types.ObjectId): Promise<void> {
     const book: Awaited<ReturnType<typeof BookDataAccess.getBookById>> = await BookDataAccess.getBookById(bookId);
     if (book === null) {
-        throw new Error('Book not found.', { cause: 'Empty query result.' });
+        throw new Error('Book not found.', { cause: 'emptyBookQueryResult' });
+    } else if (book.isAvailable === false) {
+        throw new Error('Book is not available to be loaned.', { cause: 'alreadyLoaned' });
     }
 
     const user: Awaited<ReturnType<typeof UserDataAccess.getUserById>> = await UserDataAccess.getUserById(userId);
     if (user === null) {
-        throw new Error('User not found.', { cause: 'Empty query result.' });
+        throw new Error('User not found.', { cause: 'emptyUserQueryResult' });
     }
 
-    if (book.isAvailable) {
-        try {
-            book.isAvailable = false;
-            book.loaner = userId;
-            book.borrowedAt = new Date();
-    
-            const returnDate = new Date(book.borrowedAt);
-            returnDate.setDate(returnDate.getDate() + 15);
-            book.returnDate = returnDate;
-    
-            user.borrowedBooks.push(bookId);
-    
-            await book.save();
-            await user.save();
-    
-            await logActivity(userId, 'Kitap Odunc Alma', 'Kullanici kitap odunc aldi Kitap ID :' + bookId);
-        } catch (error) {
-            throw new Error("Couldn't change the book to loaned state.", { cause: "failedBookUpdate" })
-        }
+    try {
+        book.isAvailable = false;
+        book.loaner = userId;
+        book.borrowedAt = new Date();
 
-    } else {
-        throw new Error('Book is not available to loan.', { cause: 'unavailabilityOfBook' });
-    } 
+        const returnDate = new Date(book.borrowedAt);
+        returnDate.setDate(returnDate.getDate() + 15);
+        book.returnDate = returnDate;
+
+        user.borrowedBooks.push(bookId);
+
+        await book.save();
+        await user.save();
+
+        await logActivity(userId, 'Kitap Odunc Alma', 'Kullanici kitap odunc aldi Kitap ID :' + bookId);
+    } catch (error) {
+        throw new Error("Couldn't change the book to loaned state.", { cause: "failedBookUpdate" })
+    }
 }
 
 export async function unloanBook(bookId: Types.ObjectId, userId: Types.ObjectId): Promise<void> {
