@@ -1,13 +1,13 @@
 import express from 'express';
-import * as authController from '../controllers/auth.controller';
+import * as AuthController from '../controllers/auth.controller';
 import { authorize } from '../middleware/authMiddleware';
 
 const authRouter = express.Router();
 
-authRouter.get('/protected', authorize, authController.protectedRoute);
+authRouter.get('/protected', authorize, AuthController.protectedRoute);
 
-authRouter.post('/register', authController.register);
-authRouter.post('/createUser', authController.createAdmin);
-authRouter.post('/login', authController.login);
+authRouter.post('/register', AuthController.register);
+authRouter.post('/createUser', AuthController.createAdmin);
+authRouter.post('/login', AuthController.login);
 
 export default authRouter;
