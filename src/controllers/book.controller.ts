@@ -88,7 +88,7 @@ export async function getBookById(req: Request, res: Response): Promise<void> {
 
         const book = await BookService.getBookById(bookId);
 
-        return void res.send(200).json(book);
+        return void res.json(book);
     } catch (error) {
         if (error instanceof Error) {
             if (error.cause === "emptyQueryResult") {
