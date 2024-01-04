@@ -10,10 +10,10 @@ export async function getAllUsers(req: Request, res: Response): Promise<void> {
     res.json(users);
   } catch (error) {
     if (error instanceof Error) {
-      res.status(500).json({ error: error.message });  
+      return void res.status(500).json({ error: error.message });  
     }
 
-    res.status(500).json({ error: 'Internal server error.' });
+    return void res.status(500).json({ error: 'Internal server error.' });
   }
 }
 
@@ -27,13 +27,13 @@ export async function getUserById(req: Request, res: Response): Promise<void> {
   } catch (error) {
     if (error instanceof Error) {
       if (error.cause === "emptyQueryResult") {
-        res.status(404).json("User not found.");
+        return void res.status(404).json("User not found.");
       }
 
-      res.status(500).json({ error: error.message });  
+      return void res.status(500).json({ error: error.message });  
     }
 
-    res.status(500).json({ error: 'Internal server error.' });
+    return void res.status(500).json({ error: 'Internal server error.' });
   }
 }
 
@@ -46,13 +46,13 @@ export async function getUserBorrowedBooks(req: Request, res: Response): Promise
   } catch (error) {
     if (error instanceof Error) {
       if (error.cause === "emptyQueryResult") {
-        res.status(404).json({ error: 'User not found' });
+        return void res.status(404).json({ error: 'User not found' });
       }
 
-      res.status(500).json({ error: error.message });  
+      return void res.status(500).json({ error: error.message });  
     }
 
-    res.status(500).json({ error: 'Internal server error.' });
+    return void res.status(500).json({ error: 'Internal server error.' });
   }
 }
 
@@ -71,10 +71,10 @@ export async function updateUserRole(req: Request, res: Response): Promise<void>
   } catch (error) {
     if (error instanceof Error) {
       if (error instanceof Error) {
-        res.status(500).json({ error: error.message });  
+        return void res.status(500).json({ error: error.message });  
       }
        
-      res.status(500).json({ error: 'Internal server error.' });
+      return void res.status(500).json({ error: 'Internal server error.' });
     }
   }
 }
@@ -87,9 +87,9 @@ export async function removeUserByID(req: Request, res: Response): Promise<void>
     res.json({ message: 'User removed successfully' });
   } catch (error) {
     if (error instanceof Error) {
-      res.status(500).json({ error: error.message });  
+      return void res.status(500).json({ error: error.message });  
     }
 
-    res.status(500).json({ error: 'Internal server error.' });
+    return void res.status(500).json({ error: 'Internal server error.' });
   }
 }
