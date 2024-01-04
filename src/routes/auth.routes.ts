@@ -4,7 +4,7 @@ import { authorize } from '../middleware/authMiddleware';
 
 const authRouter = express.Router();
 
-authRouter.get('/protected', authorize, AuthController.protectedRoute);
+authRouter.get('/protected', authorize(undefined), AuthController.protectedRoute);
 
 authRouter.post('/register', AuthController.register);
 authRouter.post('/createUser', AuthController.createAdmin);
