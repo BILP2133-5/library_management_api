@@ -1,10 +1,10 @@
 import express from 'express';
 import * as AuthController from '../controllers/auth.controller';
-import { authorize } from '../middleware/authMiddleware';
+import { authenticate } from '../middleware/authMiddleware';
 
 const authRouter = express.Router();
 
-authRouter.get('/protected', authorize(undefined), AuthController.protectedRoute);
+authRouter.get('/protected', authenticate, AuthController.protectedRoute);
 
 authRouter.post('/register', AuthController.register);
 authRouter.post('/createUser', AuthController.createAdmin);
