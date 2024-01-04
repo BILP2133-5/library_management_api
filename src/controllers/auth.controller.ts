@@ -11,7 +11,9 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     res.status(200).json({ token });
   } catch (error) {
     if (error instanceof Error) {
-      if (error.cause === "passwordHashing") {
+      if (error.cause === "invalidUserRole") {
+        return void res.status(400).json({ error: "The role for this user is invalid." });
+      } else if (error.cause === "passwordHashing") {
         return void res.status(500).json({ error: "Internal server error while password hashing." });
       } else if (error.cause === "userDocumentCreation") {
         return void res.status(500).json({ error: "Internal server error while trying to create a new user document." })
@@ -30,11 +32,14 @@ export const login = async (req: Request, res: Response): Promise<void> => {
   try {
     const { email, password } = req.body;
     const token = await AuthService.login(email, password);
+    
     res.status(200).json({ token });
   } catch (error) {
     if (error instanceof Error) {
       if (error.cause === "emptyQueryResult") {
         return void res.status(404).json({ error: "There's no such user." });
+      } else if (error.cause === "invalidUserRole") {
+        return void res.status(400).json({ error: "The role for this user is invalid." });
       } else if (error.cause === 'incorrectPassword') {
         return void res.status(401).json({ error: "Given password is incorrect." });
       }
