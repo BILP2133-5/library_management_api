@@ -7,13 +7,13 @@ export async function getAllUsers(req: Request, res: Response): Promise<void> {
   try {
     const users = await UserService.getAllUsers();
 
-    res.json(users);
+    return void res.json(users);
   } catch (error) {
     if (error instanceof Error) {
-      res.status(500).json({ error: error.message });  
+      return void res.json({ error: error.message });  
     }
 
-    res.status(500).json({ error: 'Internal server error.' });
+    return void res.json({ error: 'Internal server error.' });
   }
 }
 
@@ -23,17 +23,17 @@ export async function getUserById(req: Request, res: Response): Promise<void> {
   try {
     const user = await UserService.getUserById(userId);
 
-    res.json(user);
+    return void res.json(user);
   } catch (error) {
     if (error instanceof Error) {
       if (error.cause === "emptyQueryResult") {
-        res.status(404).json("User not found.");
+        return void res.json("User not found.");
       }
 
-      res.status(500).json({ error: error.message });  
+      return void res.json({ error: error.message });  
     }
 
-    res.status(500).json({ error: 'Internal server error.' });
+    return void res.json({ error: 'Internal server error.' });
   }
 }
 
@@ -42,40 +42,17 @@ export async function getUserBorrowedBooks(req: Request, res: Response): Promise
     const userId = req.params.userId;
     const borrowedBooks = await UserService.getUserBorrowedBooks(userId);
 
-    res.json(borrowedBooks);
+    return void res.json(borrowedBooks);
   } catch (error) {
     if (error instanceof Error) {
       if (error.cause === "emptyQueryResult") {
-        res.status(404).json({ error: 'User not found' });
+        return void res.json({ error: 'User not found' });
       }
 
-      res.status(500).json({ error: error.message });  
+      return void res.json({ error: error.message });  
     }
 
-    res.status(500).json({ error: 'Internal server error.' });
-  }
-}
-
-export async function updateUserRole(req: Request, res: Response): Promise<void> {
-  const { userIdToPromote, role } = req.body;
-
-  if (!UserLogic.isValidRole(role)) {
-     res.status(400).json({ error: 'Invalid role. Role must be "admin","superadmin" or "user".' });
-     return;
-  }
-
-  try {
-    const result = await UserService.updateUserRole(userIdToPromote, role);
-    
-    res.json(result);
-  } catch (error) {
-    if (error instanceof Error) {
-      if (error instanceof Error) {
-        res.status(500).json({ error: error.message });  
-      }
-       
-      res.status(500).json({ error: 'Internal server error.' });
-    }
+    return void res.json({ error: 'Internal server error.' });
   }
 }
 
@@ -84,12 +61,12 @@ export async function removeUserByID(req: Request, res: Response): Promise<void>
 
   try {
     await UserService.removeUserByID(id);
-    res.json({ message: 'User removed successfully' });
+    return void res.json({ message: 'User removed successfully' });
   } catch (error) {
     if (error instanceof Error) {
-      res.status(500).json({ error: error.message });  
+      return void res.json({ error: error.message });  
     }
 
-    res.status(500).json({ error: 'Internal server error.' });
+    return void res.json({ error: 'Internal server error.' });
   }
 }

@@ -8,21 +8,23 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     const newUser = req.body;
     const token = await AuthService.register(newUser);
 
-    res.status(200).json({ token });
+    return void res.json({ token });
   } catch (error) {
     if (error instanceof Error) {
-      if (error.cause === "passwordHashing") {
-        res.status(500).json({ error: "Internal server error while password hashing." });
+      if (error.cause === "invalidUserRole") {
+        return void res.json({ error: "The role for this user is invalid." });
+      } else if (error.cause === "passwordHashing") {
+        return void res.json({ error: "Internal server error while password hashing." });
       } else if (error.cause === "userDocumentCreation") {
-        res.status(500).json({ error: "Internal server error while trying to create a new user document." })
+        return void res.json({ error: "Internal server error while trying to create a new user document." })
       } else if (error.cause === "jwtTokenSigning") {
-        res.status(500).json({ error: "Internal server error while trying to sign the JWT token." })
+        return void res.json({ error: "Internal server error while trying to sign the JWT token." })
       }
        
-      res.status(500).json({ error: error.message });
+      return void res.json({ error: error.message });
     }
      
-    res.status(500).json({ error: "Internal server error." });
+    return void res.json({ error: "Internal server error." });
   }
 };
 
@@ -30,19 +32,22 @@ export const login = async (req: Request, res: Response): Promise<void> => {
   try {
     const { email, password } = req.body;
     const token = await AuthService.login(email, password);
-    res.status(200).json({ token });
+    
+    return void res.json({ token });
   } catch (error) {
     if (error instanceof Error) {
       if (error.cause === "emptyQueryResult") {
-        res.status(404).json({ error: "There's no such user." });
+        return void res.json({ error: "There's no such user." });
+      } else if (error.cause === "invalidUserRole") {
+        return void res.json({ error: "The role for this user is invalid." });
       } else if (error.cause === 'incorrectPassword') {
-        res.status(401).json({ error: "Given password is incorrect." });
+        return void res.json({ error: "Given password is incorrect." });
       }
        
-      res.status(500).json({ error: error.message });
+      return void res.json({ error: error.message });
     }
      
-    res.status(500).json({ error: "Internal server error." });
+    return void res.json({ error: "Internal server error." });
   }
 };
 
@@ -52,13 +57,13 @@ export const createAdmin = async (req: Request, res: Response): Promise<void> =>
     newUser.role = 'admin';
 
     const token = await AuthService.register(newUser);
-    res.status(200).json({ token });
+    return void res.json({ token });
   } catch (error) {
     if (error instanceof Error) {
-      res.status(400).json({ error: error.message });
+      return void res.json({ error: error.message });
     }
      
-    res.status(500).json({ error: "Internal server error." });
+    return void res.json({ error: "Internal server error." });
   }
 };
 
@@ -68,16 +73,16 @@ export const protectedRoute = async (req: Request, res: Response) => {
   try {
     const user = await AuthService.protectedRoute(userId);
 
-    res.status(200).json({ user });
+    return void res.json({ user });
   } catch (error) {
     if (error instanceof Error) {
       if (error.cause === "emptyQueryResult") {
-        res.status(404).json({ error: 'User not found' });
+        return void res.json({ error: 'User not found' });
       }
        
-      res.status(500).json({ error: error.message });
+      return void res.json({ error: error.message });
     }
      
-    res.status(500).json({ error: "Internal server error." });
+    return void res.json({ error: "Internal server error." });
   }
 };

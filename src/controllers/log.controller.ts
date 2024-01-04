@@ -4,12 +4,12 @@ import * as logService from '../services/log.service';
 export async function listLogs(req: Request, res: Response): Promise<void> {
     try {
         const logs = await logService.listLogs();
-        res.json(logs);
+        return void res.json(logs);
     } catch (error) {
         if (error instanceof Error) {
-            res.status(500).json({ error: error.message });
+            return void res.json({ error: error.message });
         }
 
-        res.status(500).json({ error: 'Internal server error' });
+        return void res.json({ error: 'Internal server error' });
     }
 }

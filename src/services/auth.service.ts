@@ -4,10 +4,15 @@ import { Types } from 'mongoose';
 
 import { IUser } from '../models/user.model';
 import * as UserDataAccess from '../data-access/user.data-access';
+import * as UserLogic from "../logic/user.logic";
 
 const secretKey = process.env.JWT_SECRET as string;
 
 export async function register(newUser: IUser): Promise<string> {
+  if (!UserLogic.isValidRole(newUser.role)) {
+    throw new Error('Invalid user role.', { cause: "invalidUserRole" });
+  }
+
   try {
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(newUser.password, saltRounds);
@@ -65,6 +70,8 @@ export async function login(email: string, password: string): Promise<string> {
   const user = await UserDataAccess.getUserByEmail(email);
   if (!user) {
     throw new Error('User not found.', { cause: "emptyQueryResult" });
+  } else if (!UserLogic.isValidRole(user.role)) {
+    throw new Error('Invalid user role.', { cause: "invalidUserRole" });
   }
 
   const isPasswordValid = await bcrypt.compare(password, user.password);
