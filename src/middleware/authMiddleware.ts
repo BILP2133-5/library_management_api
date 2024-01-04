@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
+import * as UserDataAccess from "../data-access/user.data-access";
+
 const secretkey = process.env.JWT_SECRET as string;
 
 function authenticate(authenticationHeader : string | undefined) {
@@ -23,14 +25,20 @@ function authenticate(authenticationHeader : string | undefined) {
   return result;
 }
 
-export const authorize = (allowedRoles : string[] | undefined) => (req: Request, res: Response, next: NextFunction) => {
+export const authorize = (allowedRoles : string[] | undefined) => async (req: Request, res: Response, next: NextFunction) => {
   try {
     const authenticationHeader = req.header('Authorization');
     const result = authenticate(authenticationHeader);
     (req as any).user = result;
 
-    if(typeof allowedRoles !== "undefined") { // authorize if any roles are given
-      if (!allowedRoles.includes((req as any).user.role)) {
+    const user = await UserDataAccess.getUserById((req as any).user.userId);
+    if (user === null) {
+      return void res.json({ error: "User not found." });
+    }
+
+    const shouldAuthorize = typeof allowedRoles !== "undefined";
+    if(shouldAuthorize) { // authorize if any roles are given
+      if (!allowedRoles.includes(user.role)) {
         return void res.status(403).json({ error: "Access denied. This user doesn't have necessary role to do the operation." });
       }
     }
