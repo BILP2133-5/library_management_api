@@ -56,29 +56,6 @@ export async function getUserBorrowedBooks(req: Request, res: Response): Promise
   }
 }
 
-export async function updateUserRole(req: Request, res: Response): Promise<void> {
-  const { userIdToPromote, role } = req.body;
-
-  if (!UserLogic.isValidRole(role)) {
-     res.status(400).json({ error: 'Invalid role. Role must be "admin","superadmin" or "user".' });
-     return;
-  }
-
-  try {
-    const result = await UserService.updateUserRole(userIdToPromote, role);
-    
-    res.json(result);
-  } catch (error) {
-    if (error instanceof Error) {
-      if (error instanceof Error) {
-        return void res.status(500).json({ error: error.message });  
-      }
-       
-      return void res.status(500).json({ error: 'Internal server error.' });
-    }
-  }
-}
-
 export async function removeUserByID(req: Request, res: Response): Promise<void> {
   const id = req.params.id;
 

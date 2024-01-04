@@ -26,21 +26,6 @@ export async function getUserBorrowedBooks(userId: string) {
   return user.borrowedBooks;
 }
 
-export interface UserOrError {
-  error?: string;
-  user?: IUserDocument;
-}
-
-export async function updateUserRole(userIdToPromote: string, role: string): Promise<IUserDocument> {
-
-  const updatedUser = await User.findByIdAndUpdate(userIdToPromote, { role }, { new: true });
-  if (!updatedUser) {
-    throw new Error('User to promote not found');
-  }
-
-  return updatedUser;
-}
-
 export async function removeUserByID(id: string): Promise<void> {
   try {
       await User.findByIdAndRemove(id);
