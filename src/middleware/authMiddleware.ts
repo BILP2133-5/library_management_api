@@ -31,14 +31,10 @@ export const authorize = (allowedRoles : string[] | undefined) => async (req: Re
     const result = authenticate(authenticationHeader);
     (req as any).user = result;
 
-    const user = await UserDataAccess.getUserById((req as any).user.userId);
-    if (user === null) {
-      return void res.json({ error: "User not found." });
-    }
-
     const shouldAuthorize = typeof allowedRoles !== "undefined";
     if(shouldAuthorize) { // authorize if any roles are given
-      if (!allowedRoles.includes(user.role)) {
+      const userRole = (req as any).user.role;
+      if (!allowedRoles.includes(userRole)) {
         return void res.status(403).json({ error: "Access denied. This user doesn't have necessary role to do the operation." });
       }
     }
