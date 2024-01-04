@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "start": "NODE_ENV='production' nodemon --require dotenv/config  ./src/app.ts",
-    "dev": "ts-node --require dotenv/config ./src/app.ts"
+    "start": "NODE_ENV='production' ts-node --require dotenv/config  ./src/app.ts",
+    "dev": "nodemon --require dotenv/config ./src/app.ts"
   },
   "keywords": [],
   "author": "",
