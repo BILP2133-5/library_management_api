@@ -12,7 +12,7 @@ bookRouter.get('/search/:query', BookController.searchBooks);
 bookRouter.put('/update/:id', BookController.updateBook);
 bookRouter.post('/add', BookController.addBook);
 bookRouter.post('/loan/:bookId', BookController.loanBook);
-bookRouter.post('/unloan/:bookId', authorize(["admin", "superadmin"]), BookController.loanBook);
+bookRouter.post('/unloan/:bookId', authorize(["admin", "superadmin"]), BookController.unloanBook);
 
 bookRouter.delete('/remove/:id', BookController.removeBookById);
 
