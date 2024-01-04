@@ -12,7 +12,13 @@ function authenticate(authenticationHeader : string | undefined) {
   }
 
   const authenticationToken = authenticationHeader.slice(7); 
-  const result : any = jwt.verify(authenticationToken, secretkey);
+
+  let result;
+  try {
+    result = jwt.verify(authenticationToken, secretkey);
+  } catch (error) {
+    throw new Error("Incorrect or expired token.");
+  }
 
   return result;
 }
@@ -25,7 +31,7 @@ export const authorize = (allowedRoles : string[] | undefined) => (req: Request,
 
     if(typeof allowedRoles !== "undefined") { // authorize if any roles are given
       if (!allowedRoles.includes((req as any).user.role)) {
-        res.status(403).json({ error: 'Access denied. Only admin users can perform this action.' });
+        res.status(403).json({ error: "Access denied. This user doesn't have necessary role to do the operation." });
       }
     }
 
