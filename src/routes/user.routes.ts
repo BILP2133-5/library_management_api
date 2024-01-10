@@ -9,6 +9,6 @@ userRouter.get('/:userId', userController.getUserByID);
 userRouter.get('/borrowedBook/:userId',userController.getUserBorrowedBooks);
 
 userRouter.put('/updaterole',requireAuth, isSuperadmin, userController.updateUserRole);
-userRouter.delete('/remove/:id', requireAuth ,isAdmin, userController.removeUserByID);
+userRouter.delete('/remove/:id', requireAuth ,isSuperadmin, userController.removeUserByID);
 
 export default userRouter;

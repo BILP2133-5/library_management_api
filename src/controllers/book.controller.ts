@@ -55,7 +55,7 @@ export async function findById(req: Request, res: Response): Promise<void> {
     try {
         const book = await bookService.findById(id);
         if (book) {
-            res.send(200).json(book);
+            res.json(book);
         } else {
             res.status(404).json({ error: 'Book not found' });
         }
