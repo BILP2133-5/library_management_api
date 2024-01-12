@@ -1,17 +1,20 @@
 import { Schema, Document, Types, model } from "mongoose";
 import bcrypt from "bcrypt";
-import { IBook } from "./book.model";
+import { IBookDocument } from "./book.model";
 
-export interface IUser extends Document {
+
+export interface IUser {
   name: string;
   email: string;
   password: string;
   role: "user" | "admin" | "superadmin";
-  borrowedBooks: Types.Array<IBook["_id"]>;
+  borrowedBooks: Types.Array<IBookDocument["_id"]>;
+}
+export interface IUserDocument extends IUser, Document {
   comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
-const UserSchema = new Schema<IUser>({
+const UserSchema = new Schema<IUserDocument>({
   name: {
     type: String,
     required: true,
@@ -42,4 +45,4 @@ UserSchema.methods.comparePassword = async function (
   return bcrypt.compare(candidatePassword, user.password);
 };
 
-export default model<IUser>("User", UserSchema);
+export default model<IUserDocument>("User", UserSchema);
