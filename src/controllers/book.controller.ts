@@ -80,11 +80,12 @@ export async function unloanBook(req: Request, res: Response): Promise<void> {
 
 export async function getBookById(req: Request, res: Response): Promise<void> {
     try {
-        const bookId = new Types.ObjectId(req.params.id);
-
-        const book = await BookService.getBookById(bookId);
-
-        res.send(200).json(book);
+        const book = await bookService.findById(id);
+        if (book) {
+            res.json(book);
+        } else {
+            res.status(404).json({ error: 'Book not found' });
+        }
     } catch (error) {
         if (error instanceof Error) {
             if (error.cause === "emptyQueryResult") {

@@ -7,9 +7,10 @@ bookRouter.get('/', BookController.listBooks);
 bookRouter.get('/:id', BookController.getBookById);
 bookRouter.get('/search/:query', BookController.searchBooks);
 
-bookRouter.put('/update/:id', BookController.updateBook);
-bookRouter.post('/add', BookController.addBook);
-bookRouter.post('/loan/:bookId', BookController.loanBook);
+bookRouter.put('/update/:id', bookController.updateBook);
+bookRouter.post('/add', bookController.addBook);
+bookRouter.post('/loan/:bookId', bookController.loanBook);
+bookRouter.post('/unloan/:bookId', bookController.unloanBook);
 
 bookRouter.delete('/remove/:id', BookController.removeBookById);
 
