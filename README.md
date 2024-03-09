@@ -1,4 +1,4 @@
-# Library Automation API
+# Library Management API
 
 # Usage
 Create a .ENV
